@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Deriving relationship between SNR and cosine similarity
+title: Cosine Similarity and SNR
 layout: single
 permalink: null
 published: true
-date: 2025-06-07
+date: 2025-06-08
 #category: stories
 #tags: me
 ---
