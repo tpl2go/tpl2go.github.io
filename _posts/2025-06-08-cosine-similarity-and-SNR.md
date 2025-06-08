@@ -127,7 +127,7 @@ $$
 
 
 ## Results
-### Case 1: QF between two noisy signals of equal SNR
+### Case 1: Cosine Similarity between two noisy signals of equal SNR
 If noise power was the same for both signals, $\beta_1$ = $\beta_2$ = $\beta$, then SNR of both signals are the same $\gamma_1$ = $\gamma_2$ = $\gamma$
 
 $$
@@ -174,7 +174,7 @@ plt.show()
 The simulation result matches theory from the high SNR to low SNR regime. Simulation shows greater jitter (variance) at the low SNR regime, but the jitter reduces if the number of samples, $T$, increases.
 
 
-## Case 2: QF between a noisy signal and a clean template
+## Case 2: Cosine Similarity between a noisy signal and a clean template
 Often, we know the signal template and cross-correlating clean template through a noisy signal recording. The height of the QF peak can actually help us estimate the SNR of the noisy signal.
 
 Setting $\beta_1$ = 0 because the template is noiseless,

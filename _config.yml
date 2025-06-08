@@ -116,7 +116,7 @@ analytics:
 author:
   name             : "Ping Liang"
   avatar           : "images/tpl2go.jpeg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Signal Processing Machine Learning Software Engineering"
+  bio              : "Signal Processing<br>Machine Learning<br>Software Engineering"
   location         : "Singapore"
   email            :
   links:
