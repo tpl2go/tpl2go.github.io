@@ -8,7 +8,9 @@ date: 2025-06-08
 #category: stories
 #tags: me
 ---
-As previously discussed in our signal detection series of posts, normalized cross correlation is widely used and a preferred technique for detecting communications signals. Its cosine similarity metric $q$ has the advantage of having a direct relationship to Signal-to-Noise Ratio (SNR) $\gamma$. 
+Recently my team had the task of measuring the Signal-to-Noise Ratio (SNR) of a signal. Since I had to derive it to teach the team, I thought it fit to post the derivation too for my own future reference. 
+
+In summary, we can measure the SNR of a signal through a cross-correlation of a known template within the signal. But it is not the standard cross-correlation. It is "normalized" version of the cross correlation which I dont see a standard name for in literature. [Eduardo](https://edfuentetaja.github.io/sdr/signal_detection) calls it the *"detection score"*. But I call it the *cosine similarity* $q$. (If someone knows the actual name do let me know.) But whatever its name, it is a widely used metric in communications signal processing. 
 
 
 | Situation | $q$ --> SNR | SNR --> $q$ |
@@ -16,10 +18,6 @@ As previously discussed in our signal detection series of posts, normalized cros
 | xcorr between two noisy signal |  | $q^2 =  \dfrac{\gamma_1}{(1+\gamma_1)}  \dfrac{\gamma_2}{(1+\gamma_2)}$  |
 | xcorr between two equally noisy signal | $\gamma =\dfrac{q}{1-q}$ | $q =\dfrac{\gamma}{1+\gamma}$ |
 | xcorr between signal and noisy signal | $\gamma =\dfrac{q^2}{1-q^2}$ | $q^2 =\dfrac{\gamma}{1+\gamma}$ |
-
-This relationship benefits communications systems in two ways:
-1. Receivers have a principled way of setting their detection threshold --- the minimum SNR they need for baseband processing
-2. Receiver can feedback the received SNR to the transmitter as part of a Adaptive Code Modulation scheme. 
 
 Let's derive the relationship!
 
@@ -175,7 +173,7 @@ The simulation result matches theory from the high SNR to low SNR regime. Simula
 
 
 ## Case 2: Cosine Similarity between a noisy signal and a clean template
-Often, we know the signal template and cross-correlating clean template through a noisy signal recording. The height of the QF peak can actually help us estimate the SNR of the noisy signal.
+Often, we know the signal template and cross-correlating clean template through a noisy signal recording. The height of the cosine similarity peak can actually help us estimate the SNR of the noisy signal.
 
 Setting $\beta_1$ = 0 because the template is noiseless,
 $$
