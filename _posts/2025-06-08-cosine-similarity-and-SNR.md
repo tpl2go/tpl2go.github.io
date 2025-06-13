@@ -8,10 +8,11 @@ date: 2025-06-08
 #category: stories
 #tags: me
 ---
-Recently my team had the task of measuring the Signal-to-Noise Ratio (SNR) of a signal. Since I had to derive it to teach the team, I thought it fit to post the derivation too for my own future reference. 
+Recently my team had the task of measuring the Signal-to-Noise Ratio (SNR) of a signal. Posting the derivation here for my own future reference. 
 
-In summary, we can measure the SNR of a signal through a cross-correlation of a known template within the signal. But it is not the standard cross-correlation. It is "normalized" version of the cross correlation which I dont see a standard name for in literature. [Eduardo](https://edfuentetaja.github.io/sdr/signal_detection) calls it the *"detection score"*. But I call it the *cosine similarity* $q$. (If someone knows the actual name do let me know.) But whatever its name, it is a widely used metric in communications signal processing. 
+We can measure the SNR of a signal through a cross-correlation of a known template within the signal. But it is not the standard cross-correlation. It is "normalized" version of the cross correlation which I dont see a standard name for in literature. [Eduardo](https://edfuentetaja.github.io/sdr/signal_detection) calls it the *"detection score"*. But I call it the *cosine similarity* $q$. (If someone knows the actual name do let me know.) But whatever its name, it is a widely used metric in communications signal processing. 
 
+In summary:
 
 | Situation | $q$ --> SNR | SNR --> $q$ |
 | :----------:| :-------------:| :----------:|
@@ -66,7 +67,7 @@ $\Vert \cdot \Vert$ is the L2 norm of the vector.
 
 $ \mid \cdot \mid$ is the absolute value of a complex number.
 
-Both the absolute value and L2 norm operation involves a square root and that is analytically annoying. So we will analyse instead the cosine similarity squared $q^2$.
+Both the absolute value and L2 norm operation involves a square root and that is analytically annoying. So we will analyse instead the squared cosine similarity $q^2$.
 
 $$
 q^2 = \frac{\Vert \langle X_1,X_2 \rangle \Vert^2}{\Vert X_1 \Vert^2 \Vert X_2 \Vert^2}
@@ -176,6 +177,7 @@ The simulation result matches theory from the high SNR to low SNR regime. Simula
 Often, we know the signal template and cross-correlating clean template through a noisy signal recording. The height of the cosine similarity peak can actually help us estimate the SNR of the noisy signal.
 
 Setting $\beta_1$ = 0 because the template is noiseless,
+
 $$
 \begin{align*}
 q^2 &= \frac{\alpha\alpha}{\alpha(\alpha + \beta_2)}\\
