@@ -18,7 +18,7 @@ In summary:
 | :----------:| :-------------:| :----------:|
 | xcorr between two noisy signal |  | $q^2 =  \dfrac{\gamma_1}{(1+\gamma_1)}  \dfrac{\gamma_2}{(1+\gamma_2)}$  |
 | xcorr between two equally noisy signal | $\gamma =\dfrac{q}{1-q}$ | $q =\dfrac{\gamma}{1+\gamma}$ |
-| xcorr between signal and noisy signal | $\gamma =\dfrac{q^2}{1-q^2}$ | $q^2 =\dfrac{\gamma}{1+\gamma}$ |
+| xcorr between clean and noisy signal | $\gamma =\dfrac{q^2}{1-q^2}$ | $q^2 =\dfrac{\gamma}{1+\gamma}$ |
 
 Let's derive the relationship!
 
