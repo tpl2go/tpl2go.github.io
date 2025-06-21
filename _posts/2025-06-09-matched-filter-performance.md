@@ -28,7 +28,7 @@ $$
 q^2 = |\langle \underline{y}, \underline{x}^* \rangle|^2
 $$
 
-Lets assume that $\underline{x}$ is a constant modulus signal. This is common for many radar and communications bursts. The phase of each element in vector $\underline{x}$ can be random and independent because we assume that our received signal is at baseband. 
+Lets assume that $\underline{x}$ is a unit modulus signal. This is common for many radar and communications bursts. The phase of each element in vector $\underline{x}$ can be random and independent because we assume that our received signal is at baseband. 
 
 ## Distribution of $q^2$ when no signal present ($\mathcal{H}_0$ case)
 
