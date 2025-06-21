@@ -84,6 +84,7 @@ $$
 $$
 
 Because noise is zero mean, independent and uncorrelated between instances, many terms involving the noise samples average to 0 in the limit of large number of samples $T$.
+
 $$
 \begin{aligned}
 \text{Numerator of }q^2
@@ -94,6 +95,7 @@ $$
 $$
 
 As for the denominator
+
 $$
 \begin{aligned}
 \text{Denominator of }q^2
