@@ -20,31 +20,37 @@ $$
 \end{aligned}
 $$
 
-where $\underline{y}$ is our received signal vector, $\underline{x}$ is our expected signal vector, $\underline{\eta}$ is the gaussian noise vector and $s$ is a real valued scalar representing the strength of the signal.
+where $\underline{y}$ is our complex-valued received signal vector, $\underline{x}$ is our complex-valued signal vector, $\underline{\eta}$ is the complex gaussian noise vector and $s$ is a real valued scalar representing the strength of the signal.
 
 Match Filter / Pulse Compression can be thought of as converting our received vector $\underline{y}$ into a test metric $q^2$ for hypothesis testing.
 
 $$ 
-q^2 = |\langle \underline{y}, \underline{x}^* \rangle|^2
+q^2 = |\langle \underline{y}, \underline{x} \rangle|^2
 $$
 
-Lets assume that $\underline{x}$ is a unit modulus signal. This is common for many radar and communications bursts. The phase of each element in vector $\underline{x}$ can be random and independent because we assume that our received signal is at baseband. 
+## Assumptions
+To make statistical analysis of this hypothesis testing more tractable, let's assume that every element in vector $\underline{x}$ is unit modulus. This is a reasonable assumption for many radar and communications bursts.
+
+Additionally, assume that $\Vert \underline{\eta} \Vert^2 = 2$. We shall see why later. Every element in $\underline{\eta}$ is also an independent zero-mean complex random gaussian with equal variance in its real and imaginary parts.
+
+Note:
+* $ \| \cdot \| $ refers to absolute value of a complex-valued scalar
+* $\Vert \cdot \Vert $ refers to the L2 norm of a complex valued vector
 
 ## Distribution of $q^2$ when no signal present ($\mathcal{H}_0$ case)
 
 $$
 \begin{aligned}
-q^2 &= |\langle \underline{y}, \underline{x}^* \rangle|^2 \\
+q^2 &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
 &= \left| \sum_{i=1}^L (\underline{\eta}[i] * \underline{x}^*[i]) \right|^2 \\
 &= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 \\
-&= \Vert \underline{\eta}' \Vert^2 \\
 &= \left| \eta'' \right|^2 \\
 \end{aligned}
 $$
 
 Since $\underline{x}$ is unit modulus, element-wise multiplication with a random gaussian vector $\underline{\eta}$ is another random gaussian vector $\underline{\eta}'$. The sum of $L$ random complex gaussian elements of $\underline{\eta}'$ is itself a random complex gaussian scalar $\eta''$.
 
-Without loss of generality, assume that the real and imaginary part of $\eta''$ are standard normals. So $q$ is [exponential distributed](https://en.wikipedia.org/wiki/Exponential_distribution) with inverse scale parameter $\lambda=1/2$. The energy of the noise vector $\underline{\eta}$ is 2.
+We had assumed that $\Vert \underline{\eta} \Vert^2 = 2$ so that the real and imaginary part of $\eta''$ are standard normals with unit variance. This way, we can easily understand $q^2$ from the definition of a [chi-squared distribution](https://en.wikipedia.org/wiki/Chi-squared_distribution). From wikipedia, a chi-squared distribution with 2 degrees of freedom is an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution) with inverse scale parameter $\lambda=1/2$. So
 
 $$
 q^2 \sim Exp(\lambda=1/2)
@@ -55,14 +61,14 @@ $$
 
 $$
 \begin{aligned}
-q^2 &= |\langle \underline{y}, \underline{x}^* \rangle|^2 \\
+q^2 &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
 &= \left| \sum_{i=1}^L ((s\underline{x}[i] + \underline{\eta}[i]) * \underline{x}^*[i]) \right|^2 \\
 &= \left| \sum_{i=1}^L (s + \underline{\eta}'[i])  \right|^2 \\
 &= \left| Ls + \eta'' \right|^2 \\
 \end{aligned}
 $$
 
-Because we already assumed the real and imaginary parts of $\eta''$ are standard normals, $q$ is [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k= 2$ (real and imaginary parts) and noncentrality parameter $\lambda = L^2s^2$ 
+Again because we already assumed the real and imaginary parts of $\eta''$ are standard normals, $q^2$ is [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k= 2$ (real and imaginary parts) and noncentrality parameter $\lambda = L^2s^2$ 
 
 $$
 q^2 \sim \chi_{nc}^2(k=2, \lambda=L^2s^2) 
@@ -87,7 +93,8 @@ $$
 \end{aligned}
 $$
 
-![Distribution of matched filter q^2](/images/posts/compare_sig_detector/q2distribution.gif)
+![Distribution of matched filter q^2](/images/posts/compare_sig_detector/q2distribution_L_3.gif)
+![Distribution of matched filter q^2](/images/posts/compare_sig_detector/q2distribution_L_10.gif)
 
 ## Receiver Operator Curves
 Recall CFAR?
@@ -97,4 +104,5 @@ For a signal of fixed SNR, varying the CFAR threshold only tradeoff between the 
 
 So this leads to the concept of measuring how good a detector is through the receiver operator curve.
 
-![ROC of matched filter detector](/images/posts/compare_sig_detector/matchfilter_roc.png)
+![ROC of matched filter detector](/images/posts/compare_sig_detector/matchfilter_roc_L_3.png)
+![ROC of matched filter detector](/images/posts/compare_sig_detector/matchfilter_roc_L_10.png)
