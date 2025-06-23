@@ -167,11 +167,11 @@ $q^2$ is the ratio between two non-central chi-squared distribution. Again, whil
 ## Visualizing the distribution
 
 
-![Distribution of cosine similarity q^2](/images/posts/cosine-similarity-performance/q2distribution_L_3.gif)
-![Distribution of cosine similarity q^2](/images/posts/cosine-similarity-performance/q2distribution_L_10.gif)
+![Distribution of cosine similarity q^2](/images/posts/signaldetection_perf_cosinesim/q2distribution_L_3.gif)
+![Distribution of cosine similarity q^2](/images/posts/signaldetection_perf_cosinesim/q2distribution_L_10.gif)
 
 ## Receiver Operator Curves
 
 
-![ROC of cosine similarity detector](/images/posts/cosine-similarity-performance/cosinesim_roc_L_3.png)
-![ROC of cosine similarity detector](/images/posts/cosine-similarity-performance/cosinesim_roc_L_10.png)
+![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/cosinesim_roc_L_3.png)
+![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/cosinesim_roc_L_10.png)

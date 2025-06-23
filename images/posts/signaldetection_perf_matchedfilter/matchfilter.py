@@ -108,7 +108,7 @@ def generate_roc_curve(L=1):
         maxq2 = max(14, np.square(snr*3))
         x_q2 = np.linspace(0,maxq2, 10000)
 
-        tpr = 1-ncx2.cdf(x_q2, 2, L*snr)
+        tpr = 1-ncx2.cdf(x_q2, 2, 2*L*snr)
         fpr = 1-expon.cdf(x_q2, loc=0, scale=2)
 
         plt.plot(fpr, tpr, alpha=0.6, label=f'{snrdb} dB')

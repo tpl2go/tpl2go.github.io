@@ -93,8 +93,8 @@ $$
 \end{aligned}
 $$
 
-![Distribution of matched filter q^2](/images/posts/compare_sig_detector/q2distribution_L_3.gif)
-![Distribution of matched filter q^2](/images/posts/compare_sig_detector/q2distribution_L_10.gif)
+![Distribution of matched filter q^2](/images/posts/signaldetection_perf_matchedfilter/q2distribution_L_3.gif)
+![Distribution of matched filter q^2](/images/posts/signaldetection_perf_matchedfilter/q2distribution_L_10.gif)
 
 ## Receiver Operator Curves
 Recall CFAR?
@@ -104,5 +104,5 @@ For a signal of fixed SNR, varying the CFAR threshold only tradeoff between the 
 
 So this leads to the concept of measuring how good a detector is through the receiver operator curve.
 
-![ROC of matched filter detector](/images/posts/compare_sig_detector/matchfilter_roc_L_3.png)
-![ROC of matched filter detector](/images/posts/compare_sig_detector/matchfilter_roc_L_10.png)
+![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_3.png)
+![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_10.png)
