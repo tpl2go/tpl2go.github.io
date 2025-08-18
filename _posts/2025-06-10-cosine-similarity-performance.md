@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Performance of Cosine Similarity Signal Detector
+title: Signal Detection : Performance of Cosine Similarity Signal Detector (4/4)
 layout: single
 permalink: null
 published: true

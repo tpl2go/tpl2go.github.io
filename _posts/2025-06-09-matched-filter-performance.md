@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Performance of Matched Filter Signal Detector
+title: Signal Detection : Performance of Matched Filter Detector (3/4)
 layout: single
 permalink: null
 published: true

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Cosine Similarity and SNR
+title: Signal Detection : Cosine Similarity and SNR (2/4)
 layout: single
 permalink: null
 published: true
@@ -8,9 +8,11 @@ date: 2025-06-08
 #category: stories
 #tags: me
 ---
-Recently my team had the task of measuring the Signal-to-Noise Ratio (SNR) of a signal. Posting the derivation here for my own future reference. 
+In this note, we examine the relationship between **cosine similarity** (a normalized cross-correlation measure) and the **Signal-to-Noise Ratio (SNR)**. This metric often appears in communication systems when comparing noisy observations of a signal or when correlating a noisy observation with a clean template. 
 
-We can measure the SNR of a signal through a cross-correlation of a known template within the signal. But it is not the standard cross-correlation. It is "normalized" version of the cross correlation which I dont see a standard name for in literature. [Eduardo](https://edfuentetaja.github.io/sdr/signal_detection) calls it the *"detection score"*. But I call it the *cosine similarity* $q$. (If someone knows the actual name do let me know.) But whatever its name, it is a widely used metric in communications signal processing. 
+Although different authors refer to this quantity by different names—for instance, [Eduardo](https://edfuentetaja.github.io/sdr/signal_detection) calls it the *detection score*—we will adopt the term *cosine similarity*, denoted by $q$. 
+
+Regardless of the name, this measure is a standard tool in signal detection and estimation.
 
 In summary:
 
@@ -215,3 +217,8 @@ plt.show()
 ```
 
 ![Squared Cosine Similarity between noisy signal and clean template](/images/posts/cosine-similarity-snr/case2.png)
+
+
+## Summary
+
+These results show that cosine similarity (or “detection score”) provides a direct connection to SNR. When correlating two noisy observations, the similarity degrades more rapidly compared to correlating with a clean template. In practice, this property is often exploited for SNR estimation in communication systems.
