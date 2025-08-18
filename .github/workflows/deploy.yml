@@ -18,7 +18,7 @@ jobs:
     - run: bundle install
     - run: bundle exec jekyll build
     - name: Deploy via Rsync
-      uses: burnett01/sync-deployments@7.0.2
+      uses: burnett01/rsync-deployments@7.0.2
       with:
         switches: -avzr --delete
         path: _site
