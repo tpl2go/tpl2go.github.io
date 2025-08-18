@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Signal Detection : Introduction (1/4)
+title: Signal Detection - Introduction (1/4)
 layout: single
 permalink: null
 published: true

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Signal Detection : Cosine Similarity and SNR (2/4)
+title: Signal Detection - Cosine Similarity and SNR (2/4)
 layout: single
 permalink: null
 published: true
