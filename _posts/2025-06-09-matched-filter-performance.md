@@ -9,9 +9,17 @@ date: 2025-06-09
 #tags: me
 ---
 
-How do you measure how good a signal detector is?
 
-Fundamentally a signal detector is a sliding classifier. This classifier is classifying between two hypotheses:
+In the [first post on signal detection]({% post_url 2025-06-07-signal-detection %}), we mentioned that if we know the signal we wish to detect, we can perform two types of cross correlation:
+* Matched Filtering with CFAR thresholding
+* Cosine Similarity with static thresholding
+
+Which method should we use? Which method is better?
+
+This note attempts to answer this question analytically and through simulations.
+
+# Problem Formulation: Hypothesis Testing
+We could formulate a cross correlation based signal detector as a sliding classifier. The classifier chooses between two possible hypotheses at every sample instance:
 
 $$
 \begin{aligned}
@@ -20,13 +28,24 @@ $$
 \end{aligned}
 $$
 
-where $\underline{y}$ is our complex-valued received signal vector, $\underline{x}$ is our complex-valued signal vector, $\underline{\eta}$ is the complex gaussian noise vector and $s$ is a real valued scalar representing the strength of the signal.
+where: 
+* $\underline{y}$ is our complex-valued received signal vector
+* $\underline{x}$ is our complex-valued signal vector
+* $\underline{\eta}$ is the complex gaussian noise vector and 
+* $s$ is a real valued scalar representing the strength of the signal.
 
-Match Filter / Pulse Compression can be thought of as converting our received vector $\underline{y}$ into a test metric $q^2$ for hypothesis testing.
+The classifier maps the physical observable $\underline{y}$ into a real valued test statistic $z$ for decision making through thresholding 
 
-$$ 
-q^2 = |\langle \underline{y}, \underline{x} \rangle|^2
-$$
+Matched Filtering's test statistic : 
+$$ z_{mf} = |\langle \underline{y}, \underline{x} \rangle|^2 $$
+
+Cosine Similarity's test statistic: 
+$$ z_{cs} = \frac{|\langle \underline{y}, \underline{x} \rangle|^2}{\Vert \underline{y} \Vert^2  \Vert \underline{x}  \Vert^2}$$
+
+Where:
+* $ \| \cdot \| $ refers to absolute value of a complex-valued scalar
+* $\Vert \cdot \Vert $ refers to the L2 norm of a complex valued vector
+
 
 ## Assumptions
 To make statistical analysis of this hypothesis testing more tractable, let's assume that every element in vector $\underline{x}$ is unit modulus. This is a reasonable assumption for many radar and communications bursts.

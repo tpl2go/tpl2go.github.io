@@ -120,9 +120,7 @@ Notice also that around the peak there is a "skirting". This skirting is due to 
 
 # Method 4: Cosine Similarity
 
-CFAR assumes that the reference samples adjacent to the test cell are free of signal. In scenarios where this assumption does not hold, an alternative approach is to normalize the correlation with respect to signal and noise energy, leading to a cosine similarity detector.
-
-Cosine Similarity detector is similar to matched filtering with the additional step of normalizing the template as well as the specific portion of the signal undergoing the dot product.
+CFAR assumes that the reference samples adjacent to the test cell are free of signal. In scenarios where this assumption does not hold, an alternative approach is to normalize the correlation with respect to signal and noise energy, leading to a **cosine similarity detector**. 
 
 $$
 q[t] = \frac{\langle x_t,s \rangle}{\Vert x_t \Vert \Vert s \Vert} = \frac{\sum_i s^*[i]x[t+i]}{\Vert x_t \Vert \Vert s \Vert}\\
@@ -132,6 +130,8 @@ $$
 * $\langle \cdot, \cdot \rangle$ is a inner product between two vectors.
 * $\Vert \cdot \Vert$ is the L2 norm of the vector.
 * $x_t$ is a segment of the received signal of the same length as the template $s$ and starting at index $t$
+
+Note that different authors may refer to this quantity by different names. For instance, [Eduardo](https://edfuentetaja.github.io/sdr/signal_detection) calls it the *detection score*. We however adopted the term *cosine similarity*, as the concept of cosine similarity is increasingly well-known due to its use in vector databases and machine learning.
 
 ![Cosine Similarity](/images/posts/signal-detection/sol4.png)
 
@@ -144,3 +144,4 @@ $$
 connects the cosine similarity threshold directly to the minimum detectable SNR. For instance, requiring $|q|^2 > 0.5$ implicitly corresponds to detecting signals with SNR greater than 1 (0 dB).
 
 Moreover, cosine similarity preserves the constant false alarm rate property, although the exact distribution of the normalized correlation follows a generalized F-distribution, making closed-form expressions less convenient. Nonetheless, the invariance to noise power ensures consistent detection performance.
+

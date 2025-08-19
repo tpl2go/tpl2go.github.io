@@ -8,21 +8,22 @@ date: 2025-06-08
 #category: stories
 #tags: me
 ---
-In this note, we examine the relationship between **cosine similarity** (a normalized cross-correlation measure) and the **Signal-to-Noise Ratio (SNR)**. This metric often appears in communication systems when comparing noisy observations of a signal or when correlating a noisy observation with a clean template. 
 
-Although different authors refer to this quantity by different names—for instance, [Eduardo](https://edfuentetaja.github.io/sdr/signal_detection) calls it the *detection score*—we will adopt the term *cosine similarity*, denoted by $q$. 
+In the [first post on signal detection]({% post_url 2025-06-07-signal-detection %}), we mentioned that a key benefit of using **cosine similarity** $q$ as a signal detection metric is its direct connection to the **Signal-to-Noise Ratio** (SNR). 
 
-Regardless of the name, this measure is a standard tool in signal detection and estimation.
+In this note, we state and derive the formula under these two cases : 
+* xcorr with a clean template
+* xcorr with a noisy template
 
-In summary:
+The formula are different and I often had to look it up. Thus the importance of this post to serve as my future reference
+
+# Summary
 
 | Situation | $q$ --> SNR | SNR --> $q$ |
 | :----------:| :-------------:| :----------:|
 | xcorr between two noisy signal |  | $q^2 =  \dfrac{\gamma_1}{(1+\gamma_1)}  \dfrac{\gamma_2}{(1+\gamma_2)}$  |
 | xcorr between two equally noisy signal | $\gamma =\dfrac{q}{1-q}$ | $q =\dfrac{\gamma}{1+\gamma}$ |
 | xcorr between clean and noisy signal | $\gamma =\dfrac{q^2}{1-q^2}$ | $q^2 =\dfrac{\gamma}{1+\gamma}$ |
-
-Let's derive the relationship!
 
 
 # Derivation
@@ -221,4 +222,4 @@ plt.show()
 
 ## Summary
 
-These results show that cosine similarity (or “detection score”) provides a direct connection to SNR. When correlating two noisy observations, the similarity degrades more rapidly compared to correlating with a clean template. In practice, this property is often exploited for SNR estimation in communication systems.
+These results show that cosine similarity (or “detection score”) provides a direct connection to SNR. When correlating two noisy observations, the similarity degrades more rapidly compared to correlating with a clean template. 
