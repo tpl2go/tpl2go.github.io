@@ -19,7 +19,7 @@ Which method should we use? Which method is better?
 This note attempts to answer this question analytically and through simulations.
 
 # Problem Formulation: Hypothesis Testing
-We could formulate a cross correlation based signal detector as a sliding classifier. The classifier chooses between two possible hypotheses at every sample instance:
+We could formulate a cross correlation based signal detector as a sliding classifier. At every sample instance, the classifier chooses between two possible hypotheses :
 
 $$
 \begin{aligned}
@@ -29,9 +29,9 @@ $$
 $$
 
 where: 
-* $\underline{y}$ is our complex-valued received signal vector
-* $\underline{x}$ is our complex-valued signal vector
-* $\underline{\eta}$ is the complex gaussian noise vector and 
+* $\underline{y}$ is a complex-valued received signal vector of length $L$
+* $\underline{x}$ is a complex-valued signal vector of length $L$
+* $\underline{\eta}$ is a complex gaussian noise vector  of length $L$
 * $s$ is a real valued scalar representing the strength of the signal.
 
 The classifier maps the physical observable $\underline{y}$ into a real valued test statistic $z$ for decision making through thresholding 
@@ -45,18 +45,16 @@ $$ z_{cs} = \frac{|\langle \underline{y}, \underline{x} \rangle|^2}{\Vert \under
 Where:
 * $ \| \cdot \| $ refers to absolute value of a complex-valued scalar
 * $\Vert \cdot \Vert $ refers to the L2 norm of a complex valued vector
+* $\underline{y}$ and $\underline{x}$ are vectors of length $L$
 
 
 ## Assumptions
-To make statistical analysis of this hypothesis testing more tractable, 
-let's assume that every element in vector $\underline{x}$ is unit modulus. 
-This is a reasonable assumption for many radar and communications bursts.
+To ease the analysis of these test statistics, 
+we assume the following:
+* every element in vector $\underline{x}$ is unit modulus
+* every element in $\underline{\eta}$ is an independent standard complex random gaussian with unit variance in its real and imaginary parts
 
-Additionally, assume that $\Vert \underline{\eta} \Vert^2 = 2$. We shall see why later. Every element in $\underline{\eta}$ is also an independent zero-mean complex random gaussian with equal variance in its real and imaginary parts.
 
-Note:
-* $ \| \cdot \| $ refers to absolute value of a complex-valued scalar
-* $\Vert \cdot \Vert $ refers to the L2 norm of a complex valued vector
 
 # Analysis of Match Filter test statistic
 
@@ -64,19 +62,29 @@ Note:
 
 $$
 \begin{aligned}
-q^2 &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
+z_{mf} &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
 &= \left| \sum_{i=1}^L (\underline{\eta}[i] * \underline{x}^*[i]) \right|^2 \\
 &= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 \\
 &= \left| \eta'' \right|^2 \\
 \end{aligned}
 $$
 
-Since $\underline{x}$ is unit modulus, element-wise multiplication with a random gaussian vector $\underline{\eta}$ is another random gaussian vector $\underline{\eta}'$. The sum of $L$ random complex gaussian elements of $\underline{\eta}'$ is itself a random complex gaussian scalar $\eta''$.
+Since the elements in $\underline{x}$ are unit modulus, they change only the phase of the elements of $\underline{\eta}$. So $\underline{\eta}'$ is still a vector random complex gaussian. 
 
-We had assumed that $\Vert \underline{\eta} \Vert^2 = 2$ so that the real and imaginary part of $\eta''$ are standard normals with unit variance. This way, we can easily understand $q^2$ from the definition of a [chi-squared distribution](https://en.wikipedia.org/wiki/Chi-squared_distribution). From wikipedia, a chi-squared distribution with 2 degrees of freedom is an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution) with inverse scale parameter $\lambda=1/2$. So
+Since the sum of gaussians is a gaussian, $\eta''$ is a random complex gaussian scalar with variance $L$ in its real and imaginary.
+
+If we rescale  the test statistic, 
 
 $$
-q^2 \sim Exp(\lambda=1/2)
+\frac{z_{mf}}{L} = \left| \mathcal{N}_{\mathcal{C}} \right|^2 
+$$
+
+we see that it is chi-squared distribution with 2 degrees of freedom.
+
+A chi-squared distribution with 2 degrees of freedom is also an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution) with inverse scale parameter $\lambda=1/2$. So
+
+$$
+\frac{z_{mf}}{L} \sim Exp(\lambda=1/2)
 $$
 
 ## Distribution of $z$ when signal is present ($\mathcal{H}_1$ case)
@@ -84,26 +92,30 @@ $$
 
 $$
 \begin{aligned}
-q^2 &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
+z_{mf} &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
 &= \left| \sum_{i=1}^L ((s\underline{x}[i] + \underline{\eta}[i]) * \underline{x}^*[i]) \right|^2 \\
 &= \left| \sum_{i=1}^L (s + \underline{\eta}'[i])  \right|^2 \\
 &= \left| Ls + \eta'' \right|^2 \\
 \end{aligned}
 $$
 
-Again because we already assumed the real and imaginary parts of $\eta''$ are standard normals, $q^2$ is [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k= 2$ (real and imaginary parts) and noncentrality parameter $\lambda = L^2s^2$ 
+Similarly if we rescale the test statistic, 
+
+$$\frac{z_{mf}}{L} = \left| \sqrt{L}s + \mathcal{N}_{\mathcal{C}} \right|^2$$
+
+we see that it is [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k= 2$ (real and imaginary parts) and noncentrality parameter $\lambda = Ls^2$ 
 
 $$
-q^2 \sim \chi_{nc}^2(k=2, \lambda=L^2s^2) 
+\frac{z_{mf}}{L} \sim \chi_{nc}^2(k=2, \lambda=Ls^2) 
 $$
 
 
 ### Visualizing the distribution
 
-Now, in my theoretical setup of the signal detection problem, the parameters are burst length $L$ and signal amplitude $s$. The total noise energy across burst length is fixed at 2. So if $L$ varies, noise power in my theoretical setup changes. In practice we dont control the noise so it is more convenient to parameterize the problem through SNR $\gamma$ and burst length $L$. 
+In practice we dont control the noise so it is more convenient to parameterize the problem through SNR $\gamma$ and burst length $L$. 
 
 $$
-SNR = \gamma = \frac{s^2}{2/L}
+SNR = \gamma = \frac{s^2}{2}
 $$
 
 
