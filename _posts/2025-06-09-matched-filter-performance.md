@@ -48,13 +48,17 @@ Where:
 
 
 ## Assumptions
-To make statistical analysis of this hypothesis testing more tractable, let's assume that every element in vector $\underline{x}$ is unit modulus. This is a reasonable assumption for many radar and communications bursts.
+To make statistical analysis of this hypothesis testing more tractable, 
+let's assume that every element in vector $\underline{x}$ is unit modulus. 
+This is a reasonable assumption for many radar and communications bursts.
 
 Additionally, assume that $\Vert \underline{\eta} \Vert^2 = 2$. We shall see why later. Every element in $\underline{\eta}$ is also an independent zero-mean complex random gaussian with equal variance in its real and imaginary parts.
 
 Note:
 * $ \| \cdot \| $ refers to absolute value of a complex-valued scalar
 * $\Vert \cdot \Vert $ refers to the L2 norm of a complex valued vector
+
+# Analysis of Match Filter test statistic
 
 ## Distribution of $q^2$ when no signal present ($\mathcal{H}_0$ case)
 
@@ -119,7 +123,10 @@ $$
 Recall CFAR?
 
 It is a method of setting the decision threshold by some mulitplier of the noise distribution mean.
-For a signal of fixed SNR, varying the CFAR threshold only tradeoff between the probability of detection and the probability of false alarm. The signal detector cannot improve both Pd and Pfa through tuning of CFAR thresholds. The overlap in the distributions of $q^2$ under the $\mathcal{H}_0$ and $\mathcal{H}_0$ cases defines how hard the classification problem is. If we want to improve the detector, we should find another test metric that we transform our received signal vector $\underline{y}$ into.
+For a signal of fixed SNR, varying the CFAR threshold only tradeoff between the probability of detection and the probability of false alarm.. 
+The signal detector cannot improve both Pd and Pfa through tuning of CFAR thresholds. 
+The overlap in the distributions of $q^2$ under the $\mathcal{H}_0$ and $\mathcal{H}_0$ cases defines how hard the classification problem is. 
+If we want to improve the detector, we should find another test metric that we transform our received signal vector $\underline{y}$ into.
 
 So this leads to the concept of measuring how good a detector is through the receiver operator curve.
 
