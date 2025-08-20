@@ -23,8 +23,8 @@ We could formulate a cross correlation based signal detector as a sliding classi
 
 $$
 \begin{aligned}
-\mathcal{H}_0 &: \underline{y} = \underline{\eta} \\
-\mathcal{H}_1 &: \underline{y} = s\underline{x} + \underline{\eta}
+\mathcal{H}_0 &: \text{(No signal)} & \underline{y} &= \underline{\eta} \\
+\mathcal{H}_1 &: \text{(Signal present)}  & \underline{y} &= s\underline{x} + \underline{\eta}
 \end{aligned}
 $$
 
@@ -34,12 +34,16 @@ where:
 * $\underline{\eta}$ is a complex gaussian noise vector  of length $L$
 * $s$ is a real valued scalar representing the strength of the signal.
 
+### Test statistics
+
 The classifier maps the physical observable $\underline{y}$ into a real valued test statistic $z$ for decision making through thresholding 
 
 Matched Filtering's test statistic : 
-$$ z_{mf} = |\langle \underline{y}, \underline{x} \rangle|^2 $$
+
+$$ z_{mf} = \frac{|\langle \underline{y}, \underline{x} \rangle|^2}{L}  $$
 
 Cosine Similarity's test statistic: 
+
 $$ z_{cs} = \frac{|\langle \underline{y}, \underline{x} \rangle|^2}{\Vert \underline{y} \Vert^2  \Vert \underline{x}  \Vert^2}$$
 
 Where:
@@ -48,112 +52,104 @@ Where:
 * $\underline{y}$ and $\underline{x}$ are vectors of length $L$
 
 
-## Assumptions
+
+### Additional Assumptions
+
 To ease the analysis of these test statistics, 
 we assume the following:
 * every element in vector $\underline{x}$ is unit modulus
 * every element in $\underline{\eta}$ is an independent standard complex random gaussian with unit variance in its real and imaginary parts
 
 
+Thus the energy of signal $\underline{x}$ is $Ls^2$, and the energy of the noise $\underline{\eta}$ is $2L$. Signal to Noise Ratio $\gamma$ is then
 
-# Analysis of Match Filter test statistic
+$$ \text{SNR} = \gamma = \frac{s^2}{2}$$
 
-## Distribution of $z$ when no signal present ($\mathcal{H}_0$ case)
-
-$$
-\begin{aligned}
-z_{mf} &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
-&= \left| \sum_{i=1}^L (\underline{\eta}[i] * \underline{x}^*[i]) \right|^2 \\
-&= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 \\
-&= \left| \eta'' \right|^2 \\
-\end{aligned}
-$$
-
-Since the elements in $\underline{x}$ are unit modulus, they change only the phase of the elements of $\underline{\eta}$. So $\underline{\eta}'$ is still a vector random complex gaussian. 
-
-Since the sum of gaussians is a gaussian, $\eta''$ is a random complex gaussian scalar with variance $L$ in its real and imaginary.
-
-If we rescale  the test statistic, 
-
-$$
-\frac{z_{mf}}{L} = \left| \mathcal{N}_{\mathcal{C}} \right|^2 
-$$
-
-we see that it is chi-squared distribution with 2 degrees of freedom.
-
-A chi-squared distribution with 2 degrees of freedom is also an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution) with inverse scale parameter $\lambda=1/2$. So
-
-$$
-\frac{z_{mf}}{L} \sim Exp(\lambda=1/2)
-$$
-
-## Distribution of $z$ when signal is present ($\mathcal{H}_1$ case)
+Often it is more practical to parameterize this problem using SNR $\gamma$ because it is unitless. So
 
 
 $$
 \begin{aligned}
-z_{mf} &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
-&= \left| \sum_{i=1}^L ((s\underline{x}[i] + \underline{\eta}[i]) * \underline{x}^*[i]) \right|^2 \\
-&= \left| \sum_{i=1}^L (s + \underline{\eta}'[i])  \right|^2 \\
-&= \left| Ls + \eta'' \right|^2 \\
+\mathcal{H}_0 &: \text{(No signal)} & \underline{y} &= \underline{\eta} \\
+\mathcal{H}_1 &: \text{(Signal present)}  & \underline{y} &= \sqrt{2\gamma}\underline{x} + \underline{\eta}
 \end{aligned}
 $$
 
-Similarly if we rescale the test statistic, 
+# Distribution of Matched Filter test statistic $z_{mf}$
 
-$$\frac{z_{mf}}{L} = \left| \sqrt{L}s + \mathcal{N}_{\mathcal{C}} \right|^2$$
-
-we see that it is [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k= 2$ (real and imaginary parts) and noncentrality parameter $\lambda = Ls^2$ 
+## $\mathcal{H}_0$ case: No signal present
 
 $$
-\frac{z_{mf}}{L} \sim \chi_{nc}^2(k=2, \lambda=Ls^2) 
+\begin{align*}
+z_{mf} &= |\langle \underline{y}, \underline{x} \rangle|^2  /L\\
+&= \left| \sum_{i=1}^L (\underline{\eta}[i] * \underline{x}^*[i]) \right|^2 / L\\
+&= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 / L \tag{Note 1}\\
+&= \left| \eta'' \right|^2 / L \tag{Note 2} \\
+&= \left| \mathcal{N}_{real}\right|^2 + \left| \mathcal{N}_{imag}\right|^2\tag{Note 3} \\
+\end{align*}
+$$
+
+Note 1: Since the elements in $\underline{x}$ are unit modulus, they change only the phase of the elements of $\underline{\eta}$. So $\underline{\eta}'$ is still a vector random complex gaussian. 
+
+Note 2: Since the sum of gaussians is a gaussian, $\eta''$ is a random complex gaussian scalar with variance $L$ in its real and imaginary.
+
+Note 3: This is a chi-square distribution with 2 degrees of freedom. A chi-square distribution with 2 degrees of freedom is also an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution) with inverse scale parameter $\lambda=1/2$. 
+
+So
+
+$$
+z_{mf}\sim Exp(\lambda=1/2)
+$$
+
+## $\mathcal{H}_1$ case: Signal is present
+
+
+$$
+\begin{align*}
+z_{mf} &= |\langle \underline{y}, \underline{x} \rangle|^2 / L\\
+&= \left| \sum_{i=1}^L \left(\left(\sqrt{2\gamma}\underline{x}[i] + \underline{\eta}[i]\right) * \underline{x}^*[i]\right) \right|^2 / L\\
+&= \left| \sum_{i=1}^L \left(\sqrt{2\gamma} + \underline{\eta}'[i]\right)  \right|^2 / L \tag{Note 1} \\
+&= \left| L\sqrt{2\gamma} + \eta'' \right|^2 / L \tag{Note 2}\\
+&= \left| \sqrt{2\gamma L} + \mathcal{N}_{real} \right|^2 + \left| \mathcal{N}_{imag} \right|^2 \tag{Note 3} \\
+\end{align*}
 $$
 
 
-### Visualizing the distribution
+Note 1: Since the elements in $\underline{x}$ are unit modulus, they change only the phase of the elements of $\underline{\eta}$. So $\underline{\eta}'$ is still a vector random complex gaussian. 
 
-In practice we dont control the noise so it is more convenient to parameterize the problem through SNR $\gamma$ and burst length $L$. 
+Note 2: Since the sum of gaussians is a gaussian, $\eta''$ is a random complex gaussian scalar with variance $L$ in its real and imaginary.
 
-$$
-SNR = \gamma = \frac{s^2}{2}
-$$
-
-
-Reparameterizing the equations in terms of SNR and burst length:
+Note 3: This is a [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k= 2$ (real and imaginary parts) and noncentrality parameter $\lambda = 2\gamma L$ 
 
 $$
-\begin{aligned}
-\mathcal{H}_0 &: q^2 \sim Exp(\lambda=1/2) \\
-\mathcal{H}_1 &: q^2 \sim \chi_{nc}^2(k=2, \lambda=2L\gamma) \\
-\end{aligned}
+\mathcal{H}_1 : z_{mf} \sim \chi_{nc}^2(k=2, \lambda=2L\gamma) \\
 $$
-
+## Visualizing distribution of $z_{mf}$
 ![Distribution of matched filter q^2](/images/posts/signaldetection_perf_matchedfilter/q2distribution_L_3.gif)
 ![Distribution of matched filter q^2](/images/posts/signaldetection_perf_matchedfilter/q2distribution_L_10.gif)
 
-### Receiver Operator Curves
-Recall CFAR?
+As SNR $\gamma$ increases, so does the separation between the blue $\mathcal{H}_0$ distribution and yellow $\mathcal{H}_1$ distribution, thus increasing the ease of correctly classifying between both hypotheses and thus detecting the signal.
 
-It is a method of setting the decision threshold by some mulitplier of the noise distribution mean.
-For a signal of fixed SNR, varying the CFAR threshold only tradeoff between the probability of detection and the probability of false alarm.. 
-The signal detector cannot improve both Pd and Pfa through tuning of CFAR thresholds. 
-The overlap in the distributions of $q^2$ under the $\mathcal{H}_0$ and $\mathcal{H}_0$ cases defines how hard the classification problem is. 
-If we want to improve the detector, we should find another test metric that we transform our received signal vector $\underline{y}$ into.
+As $L$ increases, the separation between both distributions also increases due to the integration gain effect 
 
-So this leads to the concept of measuring how good a detector is through the receiver operator curve.
+## Receiver Operator Curves
+
+For a signal of fixed length $L$ and SNR $\gamma$, varying the decision threshold on $z_{mf}$ can only tradeoffs between the probability of detection (Pd) and the probability of false alarm (Pfa). 
+The over quality of the classifier is determined by the test statistic and not the threshold.
+This leads to the concept of a receiver operator curve which plots the Pd and Pfa for every threshold. 
 
 ![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_3.png)
 ![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_10.png)
 
-# Analysis of cosine similarity test statistic
-## Distribution of $q^2$ when no signal present ($\mathcal{H}_0$ case)
+# Distribution of cosine similarity test statistic $z_{cs}$
+## $\mathcal{H}_0$ case: No signal present
 
 ### Numerator
 First we analyse the numerator:
 
 $$
 \begin{aligned}
-\text{Numerator of } q^2 &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
+\text{Numerator of } z_{cs} &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
 &= \left| \sum_{i=1}^L (\underline{\eta}[i] * \underline{x}^*[i]) \right|^2 \\
 &= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 \\
 &= \left| \eta'' \right|^2 \\
