@@ -117,9 +117,9 @@ $$
 
 Note 1: Since the elements in $\underline{x}$ are unit modulus, they change only the phase of the elements of $\underline{\eta}$. So $\underline{\eta}'$ is still a vector random complex gaussian. 
 
-Note 2: Since the sum of gaussians is a gaussian, $\eta''$ is a random complex gaussian scalar with variance $L$ in its real and imaginary.
+Note 2: Since the sum of gaussians across the components of $\eta'$ is a gaussian. So $\eta''$ is a scalar random complex gaussian scalar with variance $L$ in its real and imaginary.
 
-Note 3: This is a [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k= 2$ (real and imaginary parts) and noncentrality parameter $\lambda = 2\gamma L$ 
+Note 3: This is a [non-central chi-squared distrbution](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k= 2$ (real and imaginary parts) and noncentrality parameter $\lambda = 2\gamma L$ 
 
 $$
 \mathcal{H}_1 : z_{mf} \sim \chi_{nc}^2(k=2, \lambda=2L\gamma) \\
@@ -135,8 +135,9 @@ As $L$ increases, the separation between both distributions also increases due t
 ## Receiver Operator Curves
 
 For a signal of fixed length $L$ and SNR $\gamma$, varying the decision threshold on $z_{mf}$ can only tradeoffs between the probability of detection (Pd) and the probability of false alarm (Pfa). 
-The over quality of the classifier is determined by the test statistic and not the threshold.
-This leads to the concept of a receiver operator curve which plots the Pd and Pfa for every threshold. 
+In other words, the quality of the classifier is determined by the test statistic and not the threshold.
+
+This leads to the concept of a receiver operator curve which plots the Pd and Pfa for every threshold. The greater the area under curve, the better the classifier.
 
 ![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_3.png)
 ![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_10.png)
@@ -148,125 +149,324 @@ This leads to the concept of a receiver operator curve which plots the Pd and Pf
 First we analyse the numerator:
 
 $$
-\begin{aligned}
+\begin{align*}
 \text{Numerator of } z_{cs} &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
 &= \left| \sum_{i=1}^L (\underline{\eta}[i] * \underline{x}^*[i]) \right|^2 \\
-&= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 \\
-&= \left| \eta'' \right|^2 \\
-\end{aligned}
+&= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 \tag{Note 1}\\
+&= \left| \eta'' \right|^2 \tag{Note 2} \\
+&= \mathcal{N}^2_{real}\left(0,\sqrt{L}\right) + \mathcal{N}^2_{imag}\left(0,\sqrt{L}\right) \tag{Note 3}\\
+&= L  \chi_2^2 \tag{Note 4}
+\end{align*}
 $$
 
-Since $\underline{x}$ is unit modulus, element-wise multiplication with a random gaussian vector $\underline{\eta}$ is another random gaussian vector $\underline{\eta}'$. The sum of $L$ random complex gaussian elements of $\underline{\eta}'$ is itself a random complex gaussian scalar $\eta''$. $ \|\eta'' \|^2 $ is the sum of 2 squared gaussians (real and imaginary parts) each with variance $L$. So $ \| \eta'' \|^2$ is [scaled chi-squared distributed](https://en.wikipedia.org/wiki/Chi-squared_distribution) with degree of freedom $k=2$.
+Note 1: Since $\underline{x}$ is unit modulus, element-wise multiplication with a random gaussian vector $\underline{\eta}$ is another random gaussian vector $\underline{\eta}'$. 
 
-$$
-\text{Numerator of } q^2 \sim L  \chi_2^2
-$$
+Note 2: $\underline{\eta}'$ consists of $L$ random complex gaussian elements. Summing them results in a scalar random complex gaussian scalar.
+
+Note 3: $ |\eta'' |^2 $ is the sum of 2 squared gaussians (real and imaginary parts) each with variance $L$. 
+
+Note 4: Sum of two squared gaussian variables is [chi-squared distributed](https://en.wikipedia.org/wiki/Chi-squared_distribution) with degree of freedom $k=2$.
+
 
 ### Denominator
 Now we analyse the denominator:
 
 $$
-\begin{aligned}
-\text{Denominator of } q^2 &= \Vert \underline{y} \Vert^2  \Vert \underline{x}  \Vert^2\\
-&= \left( \sum_{i=1}^L \left| \underline{\eta}[i] \right|^2 \right)  \left( \sum_{i=1}^L \left| \underline{x}[i] \right| ^2 \right) \\
-&= L \left( \sum_{i=1}^L \left| \underline{\eta}[i] \right|^2 \right)
-\end{aligned}
+\begin{align*}
+\text{Denominator of } z_{cs} &= \Vert \underline{y} \Vert^2  \Vert \underline{x}  \Vert^2\\
+&= \left( \sum_{i=1}^L \left| \underline{\eta}[i] \right|^2 \right)  \left( \sum_{i=1}^L \left| \underline{x}[i] \right| ^2 \right) \tag{Note 1} \\
+&= L \left( \sum_{i=1}^L \left| \underline{\eta}[i] \right|^2 \right)\\
+
+&= L \left[ \mathcal{N}_{r1}^2 + \dots + \mathcal{N}_{rL}^2 + \mathcal{N}_{i1}^2 + \dots + \mathcal{N}_{iL}^2 \right] \tag{Note 2}\\
+&=L \chi_{2L}^2
+\end{align*}
 $$
 
-Because every element of $\underline{\eta}$ is a standard complex random gaussian, $\Vert \eta \Vert$ is a sum $2L$ squared standard gaussians. So $\Vert \eta \Vert$ is [chi-squared distributed](https://en.wikipedia.org/wiki/Chi-squared_distribution) with degree of freedom $k=2L$.
+Note 1: Every element of $\underline{x}$ is unit modulus so the energy of $\underline{x}$ is $L$
+
+Note 2: Sum of $2L$ squared standard gaussians is [chi-squared distributed](https://en.wikipedia.org/wiki/Chi-squared_distribution) with degree of freedom $k=2L$.
+
+
+### Wrong Results
+Though $z_{cs}$ as a ratio of two chi-squared distributions, it is not [F-distributed](https://en.wikipedia.org/wiki/F-distribution) as the numerator and denominator are not independent random variables.
 
 $$
-\text{Denominator of } q^2 \sim L \chi_{2L}^2
+z_{cs} \sim  \frac{L  \chi_2^2}{L \chi_{2L}^2} = \frac{\chi_2^2}{\chi_{2L}^2} \neq \frac{1}{L}\mathcal{F}(2,2L)
 $$
 
-### Results
-Putting numerator and denominator together:
+### Change of basis
+Fortunately the Beta distribution has a construction similar to the definition of $z_{cs}$:
 
 $$
-q^2 \sim  \frac{L  \chi_2^2}{L \chi_{2L}^2} = \frac{\chi_2^2}{\chi_{2L}^2}
-$$
-
-$q^2$ is the ratio between two chi-squared distribution. While this looks like an F-distribution, it isn't as the numerator and denominator are not independent. Fortunately there is another distribution with a similar form:
-
-$$
-\begin{aligned}
-\frac{X}{X+Y} &\sim Beta\left(\frac{k_1}{2},\frac{k_2}{2} \right)\\
+\begin{align*}
+Beta\left(\frac{k_1}{2},\frac{k_2}{2} \right) &\sim \frac{X}{X+Y}  \\
 \text{where}\\ 
 X &\sim \chi^2_{k_1}\\
 Y &\sim \chi^2_{k_2}\\
-\end{aligned}
+\end{align*}
 $$
 
-Reformulating the numerator again:
+
+We can show that $z_{cs}$ is Beta distributed through a change of basis. 
+
+First, let's express $\underline{\eta}$ as a tuple of $2L$ real-valued gaussians instead of $L$ complex gaussians
 
 $$
-X = (N_{r1} + \dots + N_{rL})^2 + (N_{i1} + \dots + N_{iL})^2
+\begin{align*}
+\underline{\eta} &= (\mathcal{CN}_1 \dots \mathcal{CN}_L) \\
+&= (\underbrace{\mathcal{N}_1 \dots \mathcal{N}_L}_{\text{real part}}, \underbrace{\mathcal{N}_{L+1} \dots \mathcal{N}_{2L}}_{\text{imag part}}) 
+\end{align*}
 $$
 
-Reformulating the denominator again:
+
+Consider two orthonormal basis:
 
 $$
-\begin{aligned}
-L \left[ N_{r1}^2 + \dots + N_{rL}^2 + N_{i1}^2 + \dots + N_{iL}^2 \right] 
-&= X  + \underbrace{(L-1) \left[ N_{r1}^2 + \dots + N_{rL}^2 + N_{i1}^2 + \dots + N_{iL}^2 \right] - \text{crossterms}}_{\text{a } \chi^2 \text{ distribution with } df=2L-2?}
+\begin{align*}
+\underline{e_1} &= \frac{1}{\sqrt{L}}(\underbrace{1,\dots,1}_{L},\underbrace{0,\dots,0}_{L}) \\
+\underline{e}_{L+1} &= \frac{1}{\sqrt{L}}(\underbrace{0,\dots,0}_{L},\underbrace{1,\dots,1}_{L}) \\
 
-\end{aligned}
+\end{align*}
 $$
 
-Unfortunately I still could not work out the math but from empirical simulations, it seems that 
+The rest of the basis vectors $\underline{e_2} \dots \underline{e_{L}}$ and $\underline{e}_{L+2} \dots \underline{e_{2L}}$ in this basis set can be found through [Gram–Schmidt process](https://en.wikipedia.org/wiki/Gram–Schmidt_process). Alternatively, if $L$ is a power of 2, the basis set can be elegantly constructed from the Hadamard matrix. For example if $L=4$, the coordinate transform matrix could be:
 
 $$
-q^2 \sim Beta(1,L-1)
+\frac{1}{\sqrt{L}}
+\begin{bmatrix}
+    1 & 1 & 1 & 1 & 0 & 0 & 0 & 0  \\
+    1 & 1 & -1 & -1 & 0 & 0 & 0 & 0  \\
+    1 & -1 & -1 & 1 & 0 & 0 & 0 & 0  \\
+    1 & -1 & 1 & -1 & 0 & 0 & 0 & 0  \\
+    0 & 0 & 0 & 0 & 1 & 1 & 1 & 1  \\
+    0 & 0 & 0 & 0 & 1 & 1 & -1 & -1  \\
+    0 & 0 & 0 & 0 & 1 & -1 & -1 & 1  \\
+    0 & 0 & 0 & 0 & 1 & -1 & 1 & -1  \\
+
+\end{bmatrix}
 $$
 
-## Distribution of $z$ when signal is present ($\mathcal{H}_1$ case)
 
-### Numerator 
-
-First we analyse the numerator
-
+The numerator of $z_{cs}$ can be reexpressed as:
 $$
-\begin{aligned}
-\text{Numerator of } q^2 &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
-&= \left| \sum_{i=1}^L ((s\underline{x}[i] + \underline{\eta}[i]) \underline{x}^*[i]) \right|^2 \\
-&= \left| \sum_{i=1}^L (s + \underline{\eta}'[i])  \right|^2 \\
-&= \left| Ls + \eta'' \right|^2 \\
-\end{aligned}
+\begin{align*}
+\text{numerator of } z_{cs} 
+&= \left| \sum_{i=1}^L \underline{\eta}'[i] \right|^2 \\
+&= \left(\sqrt{L}\underline{e_1}\cdot \underline{\eta}'\right)^2 + \left(\sqrt{L}\underline{e}_{L+1}\cdot \underline{\eta}'\right)^2 \\
+&= L \left[\mathcal{N}^2_1 + \mathcal{N}^2_{L+1} \right] \tag{Note 1}\\
+&= L \chi_2^2
+\end{align*}
 $$
 
-$\eta''$ is a random gaussian with variance = $L$. So $q^2$ is [scaled non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k=2$ (real and imaginary parts) and noncentrality parameter $\lambda = Ls^2$ 
-
+The denominator of $z_{cs}$ can be reexpressed as:
 $$
-q^2 \sim L \chi_{nc}^2(k=2, \lambda=Ls^2) 
-$$
-
-### Denominator 
-
-Next we analyse the denominator
-
-$$
-\begin{aligned}
-\text{Denominator of } q^2 &= \Vert \underline{y} \Vert^2  \Vert \underline{x}  \Vert^2\\
-&= \left( \sum_{i=1}^L \left| sx[i]+\underline{\eta}[i] \right|^2 \right)  \left( \sum_{i=1}^L \left| \underline{x}[i] \right| ^2 \right) \\
-&= L \left( \sum_{i=1}^L \left| s+\underline{\eta'}[i] \right|^2 \right)
-\end{aligned}
+\begin{align*}
+\text{denominator of } z_{cs} &= L \left( \sum_{i=1}^L \left| \underline{\eta}[i] \right|^2 \right)\\
+&= L \left( \sum_{i=1}^{2L} \left( \underline{e_i} \cdot \underline{\eta} \right)^2 \right)\\
+&= L \left[ \sum_{i=1}^{2L} \mathcal{N}^2_i\right]\\
+\end{align*}
 $$
 
-Recall that every element of $x$ is unit modulus. And since we are taking the L2 norm, we can fold the phase of $x[i]$ into $\eta$ to create a new random gaussian $\eta''$ with the same unit variance. So $\Vert y \Vert^2$ is [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k=2L$ and noncentrality parameter $\lambda = s^2$ 
+Putting numerator and denominator together:
 
 $$
-q^2 \sim L \chi_{nc}^2(k=2L, \lambda=s^2) 
+z_{cs} = \frac{\mathcal{N}^2_1 + \mathcal{N}^2_{L+1} }{\mathcal{N}^2_1 + \mathcal{N}^2_2  + \dots  + \mathcal{N}^2_{2L} } = \frac{\mathcal{X}^2_2}{\mathcal{X}^2_2 + \mathcal{X}^2_{2L-2}} 
 $$
+
+$$
+z_{cs} \sim Beta(1,L-1)
+$$
+
+## $\mathcal{H}_1$ case: signal is present 
+
+### Before Change of Basis
+
+First we analyse the numerator and denominator before change of basis
+
+$$
+\begin{align*}
+\text{Numerator of } z_{cs} &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
+&= \left| 
+        \sum_{i=1}^L 
+            \left(
+                \left(
+                    \sqrt{2\gamma}\underline{x}[i] + \underline{\eta}[i] 
+                \right) 
+                \underline{x}^*[i]
+            \right) 
+    \right|^2 \\
+&= \left| 
+        \sum_{i=1}^L 
+            \left(
+                \sqrt{2\gamma} + \underline{\eta}'[i]
+            \right)  
+    \right|^2 \\
+&= 
+    \left(
+         \mathcal{N}\left(L\sqrt{2\gamma}, \sqrt{L}\right)
+    \right)^2 + 
+    \left(
+         \mathcal{N}\left(0, \sqrt{L}\right)
+    \right)^2\\
+&= L \mathcal{X}_{nc}^2(2,2L\gamma)\\
+\end{align*}
+$$
+
+The numerator of $z_{cs}$ is [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k=2$ and noncentrality parameter $\lambda = 2L\gamma$. 
+
+$$
+\begin{align*}
+\text{Denominator of } z_{cs} 
+&= \Vert \underline{y} \Vert^2  \Vert \underline{x}  \Vert^2 \\
+&= \left( 
+        \sum_{i=1}^L 
+        \left| 
+            \sqrt{2\gamma}x[i]+\underline{\eta}[i] 
+        \right|^2 
+    \right)  
+    \left( 
+        \sum_{i=1}^L 
+        \left| 
+            \underline{x}[i] 
+        \right| ^2 
+    \right) \\
+&= L \left( 
+        \sum_{i=1}^L 
+        \left|
+            \sqrt{2\gamma}+\underline{\eta'}[i] 
+        \right|^2 
+    \right)\\
+
+&= L 
+    \sum_{i=1}^L 
+    \left|
+        \mathcal{N}_i(\sqrt{2\gamma}, \sqrt{L}) 
+    \right|^2  +
+    L \sum_{i=1}^L 
+    \left|
+        \mathcal{N}_i(0, \sqrt{L}) 
+    \right|^2 
+\\
+&= L \mathcal{X}_{nc}^2(2L,2L\gamma)\\
+
+\end{align*}
+
+
+$$
+
+The denominator of $z_{cs}$ is [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k=2L$ and noncentrality parameter $\lambda = 2L\gamma$. 
+
+While $z_{cs}$ is a ratio between two non-central chi-squared distributions, the numerator and denominator are not independent. It may also look similar to the definition of the [non-central F-distribution](https://en.wikipedia.org/wiki/Noncentral_F-distribution) but it is not because only the numerator of the non-central F-distribution is non-central.
+$$
+z_{cs} = \frac{\mathcal{X}^2_{nc}(2,2L\gamma)}{\mathcal{X}^2_{nc}(2L,2L\gamma)}
+\neq  \mathcal{F}$$
+
+
+### Change of Basis 
+
+We have to use the change of basis trick again. This time, the real part of each element in $\eta'$ has a non-zero mean. The change of basis helpfully moves all the mean offset to a single element. Here is an illustration.
+
+$$
+\frac{1}{\sqrt{L}}
+\begin{bmatrix}
+    1 & 1 & 1 & 1 & 0 & 0 & 0 & 0  \\
+    1 & 1 & -1 & -1 & 0 & 0 & 0 & 0  \\
+    1 & -1 & -1 & 1 & 0 & 0 & 0 & 0  \\
+    1 & -1 & 1 & -1 & 0 & 0 & 0 & 0  \\
+    0 & 0 & 0 & 0 & 1 & 1 & 1 & 1  \\
+    0 & 0 & 0 & 0 & 1 & 1 & -1 & -1  \\
+    0 & 0 & 0 & 0 & 1 & -1 & -1 & 1  \\
+    0 & 0 & 0 & 0 & 1 & -1 & 1 & -1  \\
+
+\end{bmatrix}
+\underbrace{
+    \begin{bmatrix}
+        \mathcal{N}(\sqrt{2\gamma},1) \\
+        \mathcal{N}(\sqrt{2\gamma},1) \\
+        \mathcal{N}(\sqrt{2\gamma},1) \\
+        \mathcal{N}(\sqrt{2\gamma},1) \\
+        \mathcal{N}(0,1) \\
+        \mathcal{N}(0,1) \\
+        \mathcal{N}(0,1) \\
+        \mathcal{N}(0,1) \\
+    \end{bmatrix}
+}_{\sqrt{2\gamma} + \eta'}
+ = 
+\begin{bmatrix}
+    \mathcal{N}(\sqrt{2L\gamma},1) \\
+    \mathcal{N}(0,1) \\
+    \mathcal{N}(0,1) \\
+    \mathcal{N}(0,1) \\
+    \mathcal{N}(0,1) \\
+    \mathcal{N}(0,1) \\
+    \mathcal{N}(0,1) \\
+    \mathcal{N}(0,1) \\
+\end{bmatrix}
+$$
+
+$$
+\begin{align*}
+\text{Numerator of } z_{cs}
+&= \left| 
+        \sum_{i=1}^L 
+            \left(
+                \sqrt{2\gamma} + \underline{\eta}'[i]
+            \right)  
+    \right|^2 \\
+
+&= \left(
+        \sqrt{L}\underline{e_1} \cdot \left(
+                \sqrt{2\gamma} + \underline{\eta}'
+            \right)  
+    \right)^2 + 
+    \left(
+        \sqrt{L}\underline{e}_{L+1}\cdot 
+                \underline{\eta}'
+    \right)^2  \\
+&= \left(\mathcal{N}_1(L\sqrt{2\gamma},\sqrt{L})\right)^2 + \left(\mathcal{N}_{L+1}(0,\sqrt{L}) \right)^2\\
+&= L \left[\left(\mathcal{N}_1(\sqrt{2L\gamma},1)\right)^2  + \mathcal{N}^2_{L+1} \right] \\
+\end{align*}
+$$
+
+
+$$
+\begin{align*}
+\text{Denominator of } z_{cs} 
+&= L \left( 
+        \sum_{i=1}^L \left|\sqrt{2\gamma}+\underline{\eta'}[i] \right|^2 
+    \right)\\
+&= L \left( 
+        \sum_{i=1}^{2L} \left( \underline{e_i} \cdot (\sqrt{2\gamma} + \underline{\eta}') \right)^2 
+    \right)\\
+&= L \left[
+        \left(\mathcal{N}_1(\sqrt{2L\gamma}, 1 )\right)^2 + 
+        \sum_{i=2}^{2L} \left(\mathcal{N}_i(0, 1 )\right)^2
+    \right]\\
+&= L \left( 
+        \left(\mathcal{N}_1(\sqrt{2L\gamma}, 1) \right)^2 + 
+        \sum_{i=2}^{2L}  \mathcal{N}_i ^2 
+    \right) \\
+\end{align*}
+$$
+
+
+
 
 ### Results 
-
-Putting numerator and denominator together, 
+This time, we use the definition of the [non-central Beta Distribution](https://en.wikipedia.org/wiki/Noncentral_beta_distribution)
 
 $$
-q^2 \sim  \frac{L  \chi_{nc}^2(k=2, \lambda=Ls^2)}{L \chi_{nc}^2(k=2L, \lambda=s^2)}
+NonCentralBeta(\frac{m}{2}, \frac{n}{2}, \lambda) = \frac{\mathcal{X}^2_{nc}(m, \lambda)}{\mathcal{X}^2_{nc}(m, \lambda) + \mathcal{X}^2_n}
 $$
 
-$q^2$ is the ratio between two non-central chi-squared distribution. Again, while this looks like a generalized F-distribution, it is not as the numerator and denominator are not independent. From empirical studies it seems that resultant distribution can be approximated by a beta distribution but I am still unable to work out the derivation of the $\alpha$ and $\beta$ parameters from $L$ and $\gamma$.
+$$
+z_{cs} = \frac{\mathcal{N}^2_1 + \mathcal{N}^2_{L+1} }{\mathcal{N}^2_1 + \mathcal{N}^2_2  + \dots  + \mathcal{N}^2_{2L} } = 
+\frac{\mathcal{X}^2_{nc}(2,2L\gamma)}{\mathcal{X}^2_{nc}(2,2L\gamma) + \mathcal{X}^2_{2L-2}} 
+$$
+
+$$
+z_{cs} \sim NonCentralBeta(1,L-1, 2L\gamma)
+$$
 
 ### Visualizing the distribution
 

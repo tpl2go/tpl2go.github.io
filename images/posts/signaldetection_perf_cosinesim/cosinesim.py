@@ -1,8 +1,56 @@
 import numpy as np
-from scipy.stats import beta,ncx2, expon
+from scipy.stats import beta, ncx2, expon
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from sklearn import metrics
+from math import exp, factorial
+from scipy.special import gammaln
+
+def noncentral_beta_pdf(x, a, b, lam, tol=1e-12):
+    """
+    Numerically stable PDF of the noncentral beta distribution.
+    
+    Parameters:
+        x : array
+            Points in [0,1] to evaluate PDF
+        a, b : float
+            Shape parameters (m/2, n/2)
+        lam : float
+            Noncentrality parameter
+        tol : float
+            Stop when next term contribution < tol
+        max_terms : int
+            Maximum Poisson terms to include
+    """
+    x = np.atleast_1d(x)
+    pdf = np.zeros_like(x, dtype=float)
+
+    # log Poisson weight base
+    log_base = -lam/2.0
+    max_terms = int(10*lam) +1
+    for j in range(max_terms):
+        # log weight using gammaln
+        log_weight = log_base + j*np.log(lam/2.0) - gammaln(j+1)
+        weight = np.exp(log_weight)
+        # if weight < tol:  # stop if contribution negligible
+        #     break
+        term = weight * beta.pdf(x, a + j, b)
+        pdf += term
+
+        # if np.all(term < tol):  # stop if contribution negligible
+        #     break
+
+    return pdf
+
+# def noncentral_beta_pdf(x, a, b, lam):
+#     """PDF of the noncentral beta distribution."""
+#     pdf = np.zeros_like(x, dtype=float)
+#     terms = 1+int(lam*10)
+#     print(terms)
+#     for j in range(terms):
+#         weight = exp(-lam/2) * (lam/2)**j / factorial(j)
+#         pdf += weight * beta.pdf(x, a + j, b)
+#     return pdf
 
 def simulate(snr, L=100):
     N = 10**5
@@ -105,17 +153,17 @@ def animate_distribution(L = 3):
         ax1.clear()
 
         q2_0, q2_1 = simulate(snr, L)
-        a0,b0, _, _ = beta.fit(q2_0, floc=0, fscale=1)
+        a0,b0 = 1, L-1
         a1,b1, _, _ = beta.fit(q2_1, floc=0, fscale=1)
 
         eps = 1e-6
         x_q2 = np.linspace(eps, 1-eps, 1000)
         pdf0 = beta.pdf(x_q2, a0, b0)
-        pdf1 = beta.pdf(x_q2, a1, b1)
+        pdf1 = noncentral_beta_pdf(x_q2, 1, L-1, 2*L*snr)
 
         color = 'b'
         ax0.plot(x_q2, pdf0,color=color, lw=2)
-        ax0.hist(q2_0, bins=100, density=True, facecolor=color, alpha=0.4, label='H0 case: No signal present')
+        ax0.hist(q2_0, bins=np.linspace(0,1,100), density=True, facecolor=color, alpha=0.4, label='H0 case: No signal present')
         # ax0.set_ylabel('pdf (No Signal Present)')
         ax1.spines['left'].set_color(color)
         ax0.tick_params(axis='y', colors=color)
@@ -123,19 +171,19 @@ def animate_distribution(L = 3):
 
         color = 'orange'
         ax1.plot(x_q2, pdf1, color=color,  lw=2)
-        ax1.hist(q2_1, bins=100, density=True, facecolor=color, alpha=0.4, label='H1 case: Signal present')
+        ax1.hist(q2_1, bins=np.linspace(0,1,100), density=True, facecolor=color, alpha=0.4, label='H1 case: Signal present')
         # ax1.set_ylabel('pdf (Signal Present)')
         ax1.spines['right'].set_color(color)
         ax1.tick_params(axis='y', colors=color)
         ax1.yaxis.label.set_color(color)
 
-        ax0.set_xlabel('q^2')
+        ax0.set_xlabel('z')
         ax0.set_xlim(0, 1)
 
         ax0.set_ylim(0, 1.1*np.max(pdf0))
         ax1.set_ylim(0, 1.1*np.max(pdf1))
 
-        ax0.set_title(f'Distribution of cosine similarity q^2 with signal L={L}, signal SNR={10*np.log10(snr):0.2f} dB')
+        ax0.set_title(f'Distribution of cosine similarity with signal L={L}, signal SNR={10*np.log10(snr):0.2f} dB')
 
         # legend on the right
         ax0.legend(loc='upper left')
@@ -144,11 +192,11 @@ def animate_distribution(L = 3):
         print(snr)
 
     ani = animation.FuncAnimation(fig, update, frames=np.linspace(1, 10, 100), interval=150)
-    ani.save(f'q2distribution_L_{L}.gif', writer='pillow')
+    ani.save(f'q2distribution_L_{L}.gif', writer='pillow', dpi=90)
 
 
-# animate_distribution(L=3)
-# animate_distribution(L=10)
+animate_distribution(L=3)
+animate_distribution(L=10)
 
 
 def plot_roc(L=3):

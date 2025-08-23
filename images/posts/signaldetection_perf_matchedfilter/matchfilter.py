@@ -92,7 +92,7 @@ def animate_distribution(L=3):
         print(snr)
 
     ani = animation.FuncAnimation(fig, update, frames=np.linspace(1, 10, 100), interval=150)
-    ani.save(f'q2distribution_L_{L}.gif', writer='pillow')
+    ani.save(f'q2distribution_L_{L}.gif', writer='pillow', dpi=50)
 
 
 # animate_distribution(L=3)
