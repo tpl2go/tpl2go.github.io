@@ -100,50 +100,6 @@ def plot_distribution(snr,L=50):
 
     plt.show()
 
-# investigate relationship between L and alpha beta
-# plt.figure()
-# for i, snr in enumerate([1,1.5, 2]):
-#     alphas, betas = [], []
-#     theoryalphas, theorybetas = [], []
-#     Ls = np.arange(2,50)
-#     for L in Ls:
-#         q2_0, q2_1 = simulate(snr, L)
-#         a, b,_,_ = beta.fit(q2_1, floc=0, fscale=1)
-#         alphas.append(a)
-#         betas.append(b)
-#         ta = snr*L*snr/(snr+1)
-#         tb = L*snr/(snr+1)
-#         theoryalphas.append(ta)
-#         theorybetas.append(tb)
-#         print(f"L={L:02d}, alpha={a:0.3f}, theory alpha={ta:0.3f}, beta={b:0.3f}, theory beta={tb:0.3f} , deltabeta = {tb/b:0.3f} ")
-
-
-
-#     plt.plot(Ls, np.array(alphas)/Ls, color=f"C{i}", label='alpha')
-#     # plt.plot(Ls, theoryalphas, color="C0", linestyle='--')
-#     plt.plot(Ls, np.array(betas)/Ls, linestyle='--', color=f"C{i}",label='betas')
-#     # plt.plot(Ls, theorybetas, color="C1", linestyle='--')
-# plt.show()
-
-# investigate relationship between beta slope and snr
-# plt.figure()
-# snrs = np.arange(1,20)
-# betafactor = []
-# for snr in snrs:
-#     q2_0, q2_1 = simulate(snr, L=50)
-#     a, b,_,_ = beta.fit(q2_1, floc=0, fscale=1)
-#     betafactor.append(b/50)
-# plt.plot(snrs, np.array(betafactor))
-# plt.xlabel('SNR')
-# plt.ylabel('beta slope')
-# plt.show()
-
-
-# for snr in range(1,20):
-#     plot_distribution(snr,L=3)
-
-
-
 def animate_distribution(L = 3):
     fig, ax0 =  plt.subplots()
     ax1 = ax0.twinx()
@@ -195,8 +151,8 @@ def animate_distribution(L = 3):
     ani.save(f'q2distribution_L_{L}.gif', writer='pillow', dpi=90)
 
 
-animate_distribution(L=3)
-animate_distribution(L=10)
+# animate_distribution(L=3)
+# animate_distribution(L=10)
 
 
 def plot_roc(L=3):
@@ -211,12 +167,12 @@ def plot_roc(L=3):
     plt.legend()
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title(f'ROC curves of matched filter signal detector (L={L})')
-    plt.savefig(f'matchfilter_roc_L_{L}.png')
+    plt.title(f'ROC curves of cosine similarity signal detector (L={L})')
+    plt.savefig(f'cosinesim_roc_L_{L}.png')
     plt.show()
 
-# plot_roc(L=3)
-# plot_roc(L=10)
+plot_roc(L=3)
+plot_roc(L=10)
 
 
 def compare_roc(L=3):
@@ -245,6 +201,6 @@ def compare_roc(L=3):
     plt.savefig(f'compare_roc_L_{L}.png')
     plt.show()
 
-compare_roc(L=3)
-compare_roc(L=10)
-compare_roc(L=30)
+# compare_roc(L=3)
+# compare_roc(L=10)
+# compare_roc(L=30)
