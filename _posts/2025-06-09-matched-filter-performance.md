@@ -77,13 +77,13 @@ $$
 
 # Summary
 
-<center>
+
 
 | Hypothesis                 | Distribution of $z_{mf}$                      | Distribution of $z_{cs}$                   |
 | :------------------------- | :-------------------------------------------- | :----------------------------------------- |
 | $\mathcal{H}_0$ : No Signal | $\mathcal{X}^2(k=2)$                            | $Beta(a=1,b=L-1)$                              |
 | $\mathcal{H}_1$ : Signal Present | $\chi_{nc}^2(k=2, \lambda=2L\gamma)$          | $Beta_{nc}(a=1,b=L-1, \lambda=2L\gamma)$          |
-</center>
+
 
 ## Visualization of distribution
 
@@ -109,12 +109,6 @@ For a signal of fixed length $L$ and SNR $\gamma$, varying the decision threshol
 In other words, the quality of the classifier is determined by the test statistic and not the threshold.
 
 This leads to the concept of a receiver operator curve which plots the Pd and Pfa for every threshold. The greater the area under curve, the better the classifier.
-<!-- 
-![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_3.png)
-![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_10.png)
-
-![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/cosinesim_roc_L_3.png)
-![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/cosinesim_roc_L_10.png) -->
 
 ![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/compare_roc_L_3.png)
 ![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/compare_roc_L_10.png)
