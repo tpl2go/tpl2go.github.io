@@ -16,10 +16,10 @@ In the [first post on signal detection]({% post_url 2025-06-07-signal-detection 
 
 Which method should we use? Which method is better?
 
-This note attempts to answer this question analytically and through simulations.
+This note analytically derives the performance of each detector as a function of length $L$ and SNR $\gamma$.
 
 # Problem Formulation: Hypothesis Testing
-We could formulate a cross correlation based signal detector as a sliding classifier. At every sample instance, the classifier chooses between two possible hypotheses :
+A cross correlation based signal detector could be formulated as a sliding classifier. At every sample instance, the classifier chooses between two possible hypotheses:
 
 $$
 \begin{aligned}
@@ -34,7 +34,7 @@ where:
 * $\underline{\eta}$ is a complex gaussian noise vector  of length $L$
 * $s$ is a real valued scalar representing the strength of the signal.
 
-### Test statistics
+## Test statistics
 
 The classifier maps the physical observable $\underline{y}$ into a real valued test statistic $z$ for decision making through thresholding 
 
@@ -53,7 +53,7 @@ Where:
 
 
 
-### Additional Assumptions
+## Additional Assumptions
 
 To ease the analysis of these test statistics, 
 we assume the following:
@@ -75,7 +75,53 @@ $$
 \end{aligned}
 $$
 
-# Distribution of Matched Filter test statistic $z_{mf}$
+# Summary
+
+<center>
+
+| Hypothesis                 | Distribution of $z_{mf}$                      | Distribution of $z_{cs}$                   |
+| :------------------------- | :-------------------------------------------- | :----------------------------------------- |
+| $\mathcal{H}_0$ : No Signal | $\mathcal{X}^2(k=2)$                            | $Beta(a=1,b=L-1)$                              |
+| $\mathcal{H}_1$ : Signal Present | $\chi_{nc}^2(k=2, \lambda=2L\gamma)$          | $Beta_{nc}(a=1,b=L-1, \lambda=2L\gamma)$          |
+</center>
+
+## Visualization of distribution
+
+### Matched Filter test statistic $z_{mf}$
+
+![Distribution of matched filter q^2](/images/posts/signaldetection_perf_matchedfilter/q2distribution_L_3.gif)
+![Distribution of matched filter q^2](/images/posts/signaldetection_perf_matchedfilter/q2distribution_L_10.gif)
+
+### Cosine Similarity test statistic $z_{cs}$
+
+![Distribution of cosine similarity q^2](/images/posts/signaldetection_perf_cosinesim/q2distribution_L_3.gif)
+![Distribution of cosine similarity q^2](/images/posts/signaldetection_perf_cosinesim/q2distribution_L_10.gif)
+
+
+As SNR $\gamma$ increases, so does the separation between the blue $\mathcal{H}_0$ distribution and yellow $\mathcal{H}_1$ distribution, thus increasing the ease of correctly classifying between both hypotheses and thus detecting the signal.
+
+As $L$ increases, the separation between both distributions also increases due to the integration gain effect 
+
+
+## Receiver Operator Curves
+
+For a signal of fixed length $L$ and SNR $\gamma$, varying the decision threshold on $z_{mf}$ can only tradeoffs between the probability of detection (Pd) and the probability of false alarm (Pfa). 
+In other words, the quality of the classifier is determined by the test statistic and not the threshold.
+
+This leads to the concept of a receiver operator curve which plots the Pd and Pfa for every threshold. The greater the area under curve, the better the classifier.
+<!-- 
+![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_3.png)
+![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_10.png)
+
+![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/cosinesim_roc_L_3.png)
+![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/cosinesim_roc_L_10.png) -->
+
+![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/compare_roc_L_3.png)
+![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/compare_roc_L_10.png)
+![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/compare_roc_L_30.png)
+
+
+# Derivation of Matched Filter test statistic $z_{mf}$ distribution
 
 ## $\mathcal{H}_0$ case: No signal present
 
@@ -85,20 +131,28 @@ z_{mf} &= |\langle \underline{y}, \underline{x} \rangle|^2  /L\\
 &= \left| \sum_{i=1}^L (\underline{\eta}[i] * \underline{x}^*[i]) \right|^2 / L\\
 &= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 / L \tag{Note 1}\\
 &= \left| \eta'' \right|^2 / L \tag{Note 2} \\
-&= \left| \mathcal{N}_{real}\right|^2 + \left| \mathcal{N}_{imag}\right|^2\tag{Note 3} \\
+&= \left[ \mathcal{N}_{real}\left(0,L\right)^2  +  \mathcal{N}_{imag}\left(0,L\right)^2 \right] /  L \\
+&= \left( \mathcal{N}_{real}\right)^2 + \left( \mathcal{N}_{imag}\right)^2 \\
 \end{align*}
 $$
 
-Note 1: Since the elements in $\underline{x}$ are unit modulus, they change only the phase of the elements of $\underline{\eta}$. So $\underline{\eta}'$ is still a vector random complex gaussian. 
+Explanatory Notes:
+1. $\underline{\eta}'$ is a vector of random complex gaussian. Its elements differ only in phase from those of $\underline{\eta}$ because the elements of $\underline{x}$ are unit modulus.
+2. $\eta''$ is a random complex gaussian scalar with variance $L$ in its real and imaginary.
 
-Note 2: Since the sum of gaussians is a gaussian, $\eta''$ is a random complex gaussian scalar with variance $L$ in its real and imaginary.
 
-Note 3: This is a chi-square distribution with 2 degrees of freedom. A chi-square distribution with 2 degrees of freedom is also an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution) with inverse scale parameter $\lambda=1/2$. 
-
-So
+The sum of two squared gaussians is a [chi-square distribution](https://en.wikipedia.org/wiki/Chi-squared_distribution) with 2 degrees of freedom and also an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution) with inverse scale parameter $\lambda=1/2$. So
 
 $$
-z_{mf}\sim Exp(\lambda=1/2)
+\mathcal{H}_0 :  \boxed{
+z_{mf} \sim \mathcal{X}_2^2\\
+}
+$$
+
+or
+
+$$
+\mathcal{H}_0 :  \boxed{z_{mf}\sim Exp(\lambda=1/2)}
 $$
 
 ## $\mathcal{H}_1$ case: Signal is present
@@ -108,41 +162,27 @@ $$
 \begin{align*}
 z_{mf} &= |\langle \underline{y}, \underline{x} \rangle|^2 / L\\
 &= \left| \sum_{i=1}^L \left(\left(\sqrt{2\gamma}\underline{x}[i] + \underline{\eta}[i]\right) * \underline{x}^*[i]\right) \right|^2 / L\\
-&= \left| \sum_{i=1}^L \left(\sqrt{2\gamma} + \underline{\eta}'[i]\right)  \right|^2 / L \tag{Note 1} \\
-&= \left| L\sqrt{2\gamma} + \eta'' \right|^2 / L \tag{Note 2}\\
-&= \left| \sqrt{2\gamma L} + \mathcal{N}_{real} \right|^2 + \left| \mathcal{N}_{imag} \right|^2 \tag{Note 3} \\
+&= \left| \sum_{i=1}^L \left(\sqrt{2\gamma} + \underline{\eta}'[i]\right)  \right|^2 / L \\
+&= \left| L\sqrt{2\gamma} + \eta'' \right|^2 / L \\
+&= \left[ \mathcal{N}_{real}(L\sqrt{2\gamma},L)^2  + 
+   \mathcal{N}_{imag}(0,L)^2 \right] / L
+\\
+&= \left(\mathcal{N}_{real} (\sqrt{2\gamma L} ,1 )\right)^2 + 
+   \left( \mathcal{N}_{imag} \right)^2 
+\\
 \end{align*}
 $$
 
 
-Note 1: Since the elements in $\underline{x}$ are unit modulus, they change only the phase of the elements of $\underline{\eta}$. So $\underline{\eta}'$ is still a vector random complex gaussian. 
-
-Note 2: Since the sum of gaussians across the components of $\eta'$ is a gaussian. So $\eta''$ is a scalar random complex gaussian scalar with variance $L$ in its real and imaginary.
-
-Note 3: This is a [non-central chi-squared distrbution](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k= 2$ (real and imaginary parts) and noncentrality parameter $\lambda = 2\gamma L$ 
+The sum of two squared gaussians whose mean may be non-zero is a [non-central chi-squared distrbution](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution). Here, the degree of freedom $k= 2$ and noncentrality parameter $\lambda = 2\gamma L$ 
 
 $$
-\mathcal{H}_1 : z_{mf} \sim \chi_{nc}^2(k=2, \lambda=2L\gamma) \\
+\mathcal{H}_1 : \boxed{z_{mf} \sim \chi_{nc}^2(k=2, \lambda=2L\gamma)} \\
 $$
-## Visualizing distribution of $z_{mf}$
-![Distribution of matched filter q^2](/images/posts/signaldetection_perf_matchedfilter/q2distribution_L_3.gif)
-![Distribution of matched filter q^2](/images/posts/signaldetection_perf_matchedfilter/q2distribution_L_10.gif)
 
-As SNR $\gamma$ increases, so does the separation between the blue $\mathcal{H}_0$ distribution and yellow $\mathcal{H}_1$ distribution, thus increasing the ease of correctly classifying between both hypotheses and thus detecting the signal.
 
-As $L$ increases, the separation between both distributions also increases due to the integration gain effect 
+# Derivation of cosine similarity test statistic $z_{cs}$ distribution
 
-## Receiver Operator Curves
-
-For a signal of fixed length $L$ and SNR $\gamma$, varying the decision threshold on $z_{mf}$ can only tradeoffs between the probability of detection (Pd) and the probability of false alarm (Pfa). 
-In other words, the quality of the classifier is determined by the test statistic and not the threshold.
-
-This leads to the concept of a receiver operator curve which plots the Pd and Pfa for every threshold. The greater the area under curve, the better the classifier.
-
-![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_3.png)
-![ROC of matched filter detector](/images/posts/signaldetection_perf_matchedfilter/matchfilter_roc_L_10.png)
-
-# Distribution of cosine similarity test statistic $z_{cs}$
 ## $\mathcal{H}_0$ case: No signal present
 
 ### Numerator
@@ -152,20 +192,17 @@ $$
 \begin{align*}
 \text{Numerator of } z_{cs} &= |\langle \underline{y}, \underline{x} \rangle|^2 \\
 &= \left| \sum_{i=1}^L (\underline{\eta}[i] * \underline{x}^*[i]) \right|^2 \\
-&= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 \tag{Note 1}\\
-&= \left| \eta'' \right|^2 \tag{Note 2} \\
-&= \mathcal{N}^2_{real}\left(0,\sqrt{L}\right) + \mathcal{N}^2_{imag}\left(0,\sqrt{L}\right) \tag{Note 3}\\
-&= L  \chi_2^2 \tag{Note 4}
+&= \left| \sum_{i=1}^L \underline{\eta}'[i]  \right|^2 \\
+&= \left| \eta'' \right|^2  \\
+&= \left(\mathcal{N}_{real}\left(0,L \right) \right)^2 + 
+\left(\mathcal{N}_{imag}\left(0,L\right) \right)^2 \\
+&= L\left[\left(\mathcal{N}_{real} \right)^2 + 
+\left(\mathcal{N}_{imag} \right)^2 \right]\\
+\\
+\text{Numerator of } z_{cs}&\sim L  \chi_2^2 
 \end{align*}
 $$
 
-Note 1: Since $\underline{x}$ is unit modulus, element-wise multiplication with a random gaussian vector $\underline{\eta}$ is another random gaussian vector $\underline{\eta}'$. 
-
-Note 2: $\underline{\eta}'$ consists of $L$ random complex gaussian elements. Summing them results in a scalar random complex gaussian scalar.
-
-Note 3: $ |\eta'' |^2 $ is the sum of 2 squared gaussians (real and imaginary parts) each with variance $L$. 
-
-Note 4: Sum of two squared gaussian variables is [chi-squared distributed](https://en.wikipedia.org/wiki/Chi-squared_distribution) with degree of freedom $k=2$.
 
 
 ### Denominator
@@ -174,17 +211,14 @@ Now we analyse the denominator:
 $$
 \begin{align*}
 \text{Denominator of } z_{cs} &= \Vert \underline{y} \Vert^2  \Vert \underline{x}  \Vert^2\\
-&= \left( \sum_{i=1}^L \left| \underline{\eta}[i] \right|^2 \right)  \left( \sum_{i=1}^L \left| \underline{x}[i] \right| ^2 \right) \tag{Note 1} \\
+&= \left( \sum_{i=1}^L \left| \underline{\eta}[i] \right|^2 \right)  \left( \sum_{i=1}^L \left| \underline{x}[i] \right| ^2 \right)  \\
 &= L \left( \sum_{i=1}^L \left| \underline{\eta}[i] \right|^2 \right)\\
 
-&= L \left[ \mathcal{N}_{r1}^2 + \dots + \mathcal{N}_{rL}^2 + \mathcal{N}_{i1}^2 + \dots + \mathcal{N}_{iL}^2 \right] \tag{Note 2}\\
-&=L \chi_{2L}^2
+&= L \left[ \mathcal{N}_{real1}^2 + \dots + \mathcal{N}_{realL}^2 + \mathcal{N}_{imag1}^2 + \dots + \mathcal{N}_{imagL}^2 \right]\\
+\\
+\text{Denominator of } z_{cs} &\sim L \chi_{2L}^2
 \end{align*}
 $$
-
-Note 1: Every element of $\underline{x}$ is unit modulus so the energy of $\underline{x}$ is $L$
-
-Note 2: Sum of $2L$ squared standard gaussians is [chi-squared distributed](https://en.wikipedia.org/wiki/Chi-squared_distribution) with degree of freedom $k=2L$.
 
 
 ### Wrong Results
@@ -209,7 +243,7 @@ $$
 
 We can show that $z_{cs}$ is Beta distributed through a change of basis. 
 
-First, let's express $\underline{\eta}$ as a tuple of $2L$ real-valued gaussians instead of $L$ complex gaussians
+First, let's express $\underline{\eta}$ as a vector of $2L$ real-valued gaussians instead of $L$ complex-valued gaussians
 
 $$
 \begin{align*}
@@ -253,7 +287,7 @@ $$
 \text{numerator of } z_{cs} 
 &= \left| \sum_{i=1}^L \underline{\eta}'[i] \right|^2 \\
 &= \left(\sqrt{L}\underline{e_1}\cdot \underline{\eta}'\right)^2 + \left(\sqrt{L}\underline{e}_{L+1}\cdot \underline{\eta}'\right)^2 \\
-&= L \left[\mathcal{N}^2_1 + \mathcal{N}^2_{L+1} \right] \tag{Note 1}\\
+&= L \left[\mathcal{N}^2_1 + \mathcal{N}^2_{L+1} \right] \\
 &= L \chi_2^2
 \end{align*}
 $$
@@ -303,10 +337,10 @@ $$
     \right|^2 \\
 &= 
     \left(
-         \mathcal{N}\left(L\sqrt{2\gamma}, \sqrt{L}\right)
+         \mathcal{N}\left(L\sqrt{2\gamma}, L\right)
     \right)^2 + 
     \left(
-         \mathcal{N}\left(0, \sqrt{L}\right)
+         \mathcal{N}\left(0,L\right)
     \right)^2\\
 &= L \mathcal{X}_{nc}^2(2,2L\gamma)\\
 \end{align*}
@@ -340,11 +374,11 @@ $$
 &= L 
     \sum_{i=1}^L 
     \left|
-        \mathcal{N}_i(\sqrt{2\gamma}, \sqrt{L}) 
+        \mathcal{N}_i(\sqrt{2\gamma}, L) 
     \right|^2  +
     L \sum_{i=1}^L 
     \left|
-        \mathcal{N}_i(0, \sqrt{L}) 
+        \mathcal{N}_i(0, L) 
     \right|^2 
 \\
 &= L \mathcal{X}_{nc}^2(2L,2L\gamma)\\
@@ -357,9 +391,11 @@ $$
 The denominator of $z_{cs}$ is [non-central chi-squared distrbuted](https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution) with degree of freedom $k=2L$ and noncentrality parameter $\lambda = 2L\gamma$. 
 
 While $z_{cs}$ is a ratio between two non-central chi-squared distributions, the numerator and denominator are not independent. It may also look similar to the definition of the [non-central F-distribution](https://en.wikipedia.org/wiki/Noncentral_F-distribution) but it is not because only the numerator of the non-central F-distribution is non-central.
+
 $$
 z_{cs} = \frac{\mathcal{X}^2_{nc}(2,2L\gamma)}{\mathcal{X}^2_{nc}(2L,2L\gamma)}
-\neq  \mathcal{F}$$
+\neq  \mathcal{F}
+$$
 
 
 ### Change of Basis 
@@ -423,7 +459,7 @@ $$
         \sqrt{L}\underline{e}_{L+1}\cdot 
                 \underline{\eta}'
     \right)^2  \\
-&= \left(\mathcal{N}_1(L\sqrt{2\gamma},\sqrt{L})\right)^2 + \left(\mathcal{N}_{L+1}(0,\sqrt{L}) \right)^2\\
+&= \left(\mathcal{N}_1(L\sqrt{2\gamma},L)\right)^2 + \left(\mathcal{N}_{L+1}(0,L) \right)^2\\
 &= L \left[\left(\mathcal{N}_1(\sqrt{2L\gamma},1)\right)^2  + \mathcal{N}^2_{L+1} \right] \\
 \end{align*}
 $$
@@ -467,15 +503,3 @@ $$
 $$
 z_{cs} \sim NonCentralBeta(1,L-1, 2L\gamma)
 $$
-
-### Visualizing the distribution
-
-
-![Distribution of cosine similarity q^2](/images/posts/signaldetection_perf_cosinesim/q2distribution_L_3.gif)
-![Distribution of cosine similarity q^2](/images/posts/signaldetection_perf_cosinesim/q2distribution_L_10.gif)
-
-### Receiver Operator Curves
-
-
-![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/cosinesim_roc_L_3.png)
-![ROC of cosine similarity detector](/images/posts/signaldetection_perf_cosinesim/cosinesim_roc_L_10.png)

@@ -171,13 +171,13 @@ def plot_roc(L=3):
     plt.savefig(f'cosinesim_roc_L_{L}.png')
     plt.show()
 
-plot_roc(L=3)
-plot_roc(L=10)
+# plot_roc(L=3)
+# plot_roc(L=10)
 
 
-def compare_roc(L=3):
+def compare_roc(L=3,startdb=-6):
     fig = plt.figure()
-    for i, snrdb in enumerate([-6,-3,0,3,6]):
+    for i, snrdb in enumerate(np.arange(5)*3 + startdb):
         snr = 10**(snrdb/10)
         q2_0, q2_1 = simulate(snr, L)
         y_true = np.concatenate([np.zeros_like(q2_0), np.ones_like(q2_1)])
@@ -201,6 +201,6 @@ def compare_roc(L=3):
     plt.savefig(f'compare_roc_L_{L}.png')
     plt.show()
 
-# compare_roc(L=3)
-# compare_roc(L=10)
-# compare_roc(L=30)
+compare_roc(L=3, startdb=-6)
+compare_roc(L=10, startdb=-9)
+compare_roc(L=30, startdb=-15)

@@ -49,7 +49,7 @@ def plot_distribution(snr, L):
 
     plt.show()
 
-plot_distribution(5,5)
+# plot_distribution(5,5)
 
 
 def animate_distribution(L=3):
@@ -61,9 +61,12 @@ def animate_distribution(L=3):
         ax1.clear()
 
         x_q2, maxq2, pdf_0, pdf_1, q2_0, q2_1 = simulate(snr, L)
+
+        bins = np.linspace(x_q2.min(), x_q2.max(), 100)
+
         color = 'b'
-        ax0.plot(x_q2, pdf_0,color=color, lw=2)
-        ax0.hist(q2_0, bins=100, density=True, facecolor=color, alpha=0.4, label='H0 case: No signal present')
+        ax0.plot(x_q2, pdf_0, color=color, lw=2)
+        ax0.hist(q2_0, bins=bins, density=True, facecolor=color, alpha=0.4, label='H0 case: No signal present')
         # ax0.set_ylabel('pdf (No Signal Present)')
         ax1.spines['left'].set_color(color)
         ax0.tick_params(axis='y', colors=color)
@@ -71,19 +74,19 @@ def animate_distribution(L=3):
 
         color = 'orange'
         ax1.plot(x_q2, pdf_1, color=color,  lw=2)
-        ax1.hist(q2_1, bins=100, density=True, facecolor=color, alpha=0.4, label='H1 case: Signal present')
+        ax1.hist(q2_1, bins=bins, density=True, facecolor=color, alpha=0.4, label='H1 case: Signal present')
         # ax1.set_ylabel('pdf (Signal Present)')
         ax1.spines['right'].set_color(color)
         ax1.tick_params(axis='y', colors=color)
         ax1.yaxis.label.set_color(color)
 
-        ax0.set_xlabel('q^2')
+        ax0.set_xlabel('z')
         ax0.set_xlim(0, maxq2)
 
         ax0.set_ylim(0, 1.1*np.max(pdf_0))
         ax1.set_ylim(0, 1.1*np.max(pdf_1))
 
-        ax0.set_title(f'Distribution of q^2 with signal L={L}, signal SNR={10*np.log10(snr):0.2f} dB')
+        ax0.set_title(f'Distribution of matched filter result with signal L={L}, signal SNR={10*np.log10(snr):0.2f} dB')
 
         # legend on the right
         ax0.legend(loc='upper left')
@@ -92,11 +95,11 @@ def animate_distribution(L=3):
         print(snr)
 
     ani = animation.FuncAnimation(fig, update, frames=np.linspace(1, 10, 100), interval=150)
-    ani.save(f'q2distribution_L_{L}.gif', writer='pillow', dpi=50)
+    ani.save(f'q2distribution_L_{L}.gif', writer='pillow', dpi=90)
 
 
-# animate_distribution(L=3)
-# animate_distribution(L=10)
+animate_distribution(L=3)
+animate_distribution(L=10)
 
 
 def generate_roc_curve(L=1):
@@ -119,5 +122,5 @@ def generate_roc_curve(L=1):
     plt.savefig(f'matchfilter_roc_L_{L}.png')
     plt.show()
 
-generate_roc_curve(L=3)
-generate_roc_curve(L=10)
+# generate_roc_curve(L=3)
+# generate_roc_curve(L=10)
