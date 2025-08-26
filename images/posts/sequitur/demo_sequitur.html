@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motif Discovery with Sequitur</title>
+    <style>
+        #xmlresults {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+        }
+
+        #inputText {
+            font-size: 10px !important;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+    </style>
+    <script src="./js/sequitur.js"></script>
+    <script src="./js/sortable.min.js"></script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container my-5">
+        <!-- Page Title -->
+        <div class="text-center">
+            <h1 class="display-4">Motif Discovery using Sequitur</h1>
+            <!-- <p class="lead">Paste your text below to analyze it and discover motifs.</p> -->
+        </div>
+
+        <!-- Algorithm Details -->
+        <div class="text-center text-muted">
+            <p>
+                Javascript implementation of Sequitur modified from <a href="http://www.sequitur.info" target="_blank"
+                    class="text-primary">original author's implementation</a>
+            </p>
+        </div>
+
+        <!-- Two-Column Layout -->
+        <div class="row">
+            <!-- Left Column: Input Text -->
+            <div class="col-md-6">
+                <h3>Input Text</h3>
+                <textarea id="inputText" class="small form-control" rows="10"
+                    placeholder="Paste your text here"></textarea>
+                <p class="small" id="xmlresults"></p>
+                <fieldset id="motifControl">
+                    <legend>Motif Minimum Requirement</legend>
+                    <label for="formControlRange">Count: </label>
+                    <output id="minCountValue">2</output>
+                    <input type="range" class="form-control-range" id="minCountRange" value="2" min="2" max="20">
+
+
+                    <label for="formControlRange">Length: </label>
+                    <output id="minLengthValue">2</output>
+                    <input type="range" class="form-control-range" id="minLengthRange" value="2" min="2" max="20">
+                    <p class="text-muted small">Note: increasing requirements will only reduce the number of displayed
+                        motifs. Does not increase algo speed.</p>
+                </fieldset>
+                <button id="processButton" class="btn btn-primary mb-3">Process Text</button>
+                <button id="resetButton" class="d-none btn btn-danger mb-3">Reset</button>
+
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="col-md-6">
+                <h3>Results</h3>
+                <table class="table">
+                    <tbody>
+                        <tr id="resultsStats"></tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-bordered small" data-sortable>
+                    <thead>
+                        <tr>
+                            <th data-sortable-type="alpha">Motif</th>
+                            <th data-sortable-type="numeric">Count</th>
+                            <th data-sortable-type="numeric">Length</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTable">
+                        <!-- Results will be appended here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.getElementById('minCountRange').addEventListener("input", (event) => {
+            document.getElementById('minCountValue').textContent = event.target.value;
+        });
+
+        document.getElementById('minLengthRange').addEventListener("input", (event) => {
+            document.getElementById('minLengthValue').textContent = event.target.value;
+        });
+
+        // Build a lookup table
+        var motifMap = new Map();
+
+        // Add Event Listener that uses Event bubbling
+        document.getElementById('resultsTable').addEventListener('click', (event) => {
+            target = event.target;
+            if (target.dataset.hasOwnProperty('motifid')) {
+                if (target.classList.contains('table-active')) {
+                    removeHighlight(target.dataset.motifid);
+                    target.classList.remove('table-active');
+                }
+                else {
+                    highlightWords(target.dataset.motifid);
+                    target.classList.add('table-active');
+                }
+            }
+        });
+
+
+        function runSequitur(text, minCount = 1, minLength = 1) {
+            let engine = new Sequitur();
+            for (let i = 0; i < text.length; i++) {
+                engine.addSymbol(text[i]);
+            }
+            let motif_ids = [];
+            let motif_strreprs = [];
+            let motif_counts = [];
+            let motif_lengths = [];
+            let motif_toplevelcounts = [];
+            let motif_parentcounts = [];
+            for (const compsymb of engine.disymb2compsymb.values()) {
+                if ((compsymb.locs.size >= minCount) && (compsymb.strrepr.length >= minLength)) {
+                    motif_ids.push(compsymb.compositesymbolID);
+                    motif_strreprs.push(compsymb.strrepr);
+                    motif_counts.push(compsymb.locs.size);
+                    motif_lengths.push(compsymb.strrepr.length);
+                    motif_toplevelcounts.push(compsymb.toplevelcount);
+                    motif_parentcounts.push(compsymb.parentCompositeSymbols.size);
+                }
+            }
+            return {
+                'xml': engine.tplxml(),
+                'ids': motif_ids,
+                'strreprs': motif_strreprs,
+                'counts': motif_counts,
+                'lengths': motif_lengths,
+                'toplevelcounts': motif_toplevelcounts,
+                'parentcounts': motif_parentcounts
+            };
+        }
+
+        function populateTable(motif_ids, motif_strreprs, motif_counts, motif_lengths, motifs_toplevelcounts, motifs_parentcounts) {
+            const resultsTable = document.getElementById('resultsTable');
+
+            // Clear previous results
+            resultsTable.innerHTML = '';
+
+            for (let i = 0; i < motif_ids.length; i++) {
+                if (motifs_toplevelcounts[i] || motifs_parentcounts[i] > 1) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td data-motifid=${motif_ids[i]}>${motif_strreprs[i]}</td><td>${motif_counts[i]}</td><td>${motif_lengths[i]}</td>`;
+                    resultsTable.appendChild(row);
+                }
+            }
+
+            Sortable.initTable(resultsTable);
+        }
+
+        function processButton() {
+            motifMap.clear();
+
+
+            const inputText = document.getElementById('inputText').value;
+
+            // Get results from the algorithm
+            let minCount = document.getElementById('minCountRange').value;
+            let minLength = document.getElementById('minLengthRange').value;
+            const results = runSequitur(inputText, minCount, minLength);
+
+            // Populate the table with the results
+            populateTable(results.ids, results.strreprs, results.counts, results.lengths, results.toplevelcounts, results.parentcounts);
+
+            // XML results viewer
+            document.getElementById('xmlresults').innerHTML = results.xml;
+
+            // Populate motifMap
+            document.querySelectorAll('.motif-instance').forEach(motif => {
+                if (motifMap.has(motif.dataset.motifid)) {
+                    motifMap.get(motif.dataset.motifid).push(motif)
+                }
+                else {
+                    motifMap.set(motif.dataset.motifid, [motif]);
+                }
+            });
+
+            // Results Stats
+            const statsrow = document.getElementById('resultsStats');
+            statsrow.innerHTML = '';
+            const inputlen = document.createElement('td');
+            inputlen.innerHTML = `Input Len: ${inputText.length}`;
+            statsrow.appendChild(inputlen);
+            const totalmotifs = document.createElement('td');
+            totalmotifs.innerHTML = `Total Motifs: ${results.ids.length}`;
+            statsrow.appendChild(totalmotifs);
+
+            document.getElementById('processButton').classList.add('d-none');
+            document.getElementById('inputText').classList.add('d-none');
+            document.getElementById('motifControl').classList.add('d-none');
+            document.getElementById('resetButton').classList.remove('d-none');
+
+        };
+
+        // Highlight functions using the map
+        function highlightWords(motifid) {
+            const motifinstancelist = motifMap.get(motifid);
+            if (motifinstancelist) { motifinstancelist.forEach(motifinstance => motifinstance.classList.add('highlight')) };
+        }
+
+        function removeHighlight(motifid) {
+            const motifinstancelist = motifMap.get(motifid);
+            if (motifinstancelist) { motifinstancelist.forEach(motifinstance => motifinstance.classList.remove('highlight')) };
+        }
+
+        document.getElementById('processButton').addEventListener('click', processButton);
+        document.getElementById('resetButton').addEventListener('click', () => {
+            document.getElementById('processButton').classList.remove('d-none')
+            document.getElementById('inputText').classList.remove('d-none')
+            document.getElementById('motifControl').classList.remove('d-none')
+            document.getElementById('inputText').value = '';
+            document.getElementById('resultsTable').innerHTML = '';
+            document.getElementById('xmlresults').innerHTML = '';
+            document.getElementById('resultsStats').innerHTML = '';
+            document.getElementById('resetButton').classList.add('d-none');
+            motifMap.clear();
+        });
+
+    </script>
+
+
+</body>
+
+</html>
