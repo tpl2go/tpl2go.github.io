@@ -37,6 +37,8 @@ To test this intuition, I ran a quick C++ simulation using a simple Hamming(7,4)
 
 ![Screenshot showing threshold in hamming(4,7)](/images/posts/ecc_threshold/hamming_threshold.png)
 
+Sure enough, a threshold appears around a physical error rate of 0.211. Above that, the Hamming code degrades performance rather than improving it. I wonder if this threshold value can be derived from first principles.
+
 ## Reflection on Cross-Domain Training
 
 In communications and signal processing, we rarely talk explicitly about “thresholds” for error-correction codes. At best, we say a code can correct up to x number of bit flips. But the threshold concept still exists—just not described in those terms. As I often say, innovation happens at the intersection of domains. In this case, a curiosity-led study into quantum computing returned with a refreshing new view on a mature topic. 
